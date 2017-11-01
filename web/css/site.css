@@ -497,10 +497,10 @@ a.desc:after {
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 450px;
+    height: 700px;
     padding: 0;
     margin-top: -20px;
-    width: 1800px;
+    /*width: 1900px;*/
     background-attachment:fixed;
 }
 
@@ -678,7 +678,7 @@ a.desc:after {
     margin-top: -24px;
 }
 .form-control {
-    font-size: 13px;
+    /*font-size: 13px;*/
     height: 30px;
 }
 .form-control:focus {
@@ -700,5 +700,74 @@ body{
 
 #main_block {
     margin-left: 400px;
-    //text-align: center;
+   
+}
+
+#calendar_footer{
+    font-family: CalligraphiaOne;
+    width:900px;
+/*    margin: 0 15%;*/
+    font-size: 10px;
+    text-align: center;
+    /*background-color: #F5F5F5;*/ 
+    background-color: #493A34;
+    border: none;
+    color: #C5AB8F;
+    margin: auto;
+    
+}
+#calendar_footer th {
+    font-family: CalligraphiaOne;
+    font-size: 10px;
+    text-align: center;
+    border: none;
+    padding-bottom: 1px;
+    color: #C5AB8F;
+   
+}
+#calendar_footer td {
+    border:1px solid grey;
+    border-radius: 5px;
+    
+    
+}
+#on_ceil {
+    
+    border-left: 1px solid gray;
+    border-top: 1px solid gray;
+    border-right: 1px solid gray;
+    border-top-left-radius:8px;
+    border-top-right-radius: 8px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.pull-left{
+    color: #C5AB8F;
+}
+.a_main, .a_main:hover {
+    color: #B64C43;
+}
+
+.footer {
+   background-color: #493A34;
+}
+
+#container_footer {
+    background-color: #493A34;
+    width: auto;
+    margin-left: 0;
+}
+
+.footer_div_img {
+    width: 70%;
+    height: 60px;
+    float: right;
+  
+}
+.footer_img {
+    width: 65px;
+    height: 65px;
+    margin-right: 100px;
+    border-radius: 20px;
+   
 }

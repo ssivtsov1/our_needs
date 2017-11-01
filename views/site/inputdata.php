@@ -42,7 +42,7 @@ $this->title = '';
                          var q1 = q.substr(3);
                          var n = q.substr(0,3);
                          $("#inputdata-unit_1").append("<option value="+n+
-                         " style="+String.fromCharCode(34)+"font-size: 10px;"+
+                         " style="+String.fromCharCode(34)+"font-size: 14px;"+
                          String.fromCharCode(34)+">"+q1+"</option>");
                         } 
                          $("#inputdata-unit_1").change();
@@ -70,7 +70,7 @@ $this->title = '';
                          var q1 = q.substr(3);
                          var n = q.substr(0,3);
                          $("#inputdata-unit_2").append("<option value="+n+
-                         " style="+String.fromCharCode(34)+"font-size: 10px;"+
+                         " style="+String.fromCharCode(34)+"font-size: 14px;"+
                          String.fromCharCode(34)+">"+q1+"</option>");
                         } 
                          

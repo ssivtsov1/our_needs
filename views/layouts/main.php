@@ -208,9 +208,152 @@ AppAsset::register($this);
  
     <footer class="footer">
         
-        <div class="container">
-            <p class="pull-left">&copy; ЦЕК <?= date('Y') ?></p>
-            <p class="pull-right"><?//= Yii::powered() ?></p>
+        <div id="container_footer" class="container">
+            <p class="pull-left">&copy; ЦЕК <?= date('Y') ?> &nbsp &nbsp
+            <?= Html::a('Головна',["index"],['class' => 'a_main']); ?> &nbsp &nbsp
+            <?= Html::a("<a class='a_main' href='http://cek.dp.ua'>сайт ПрАТ ПЕЕМ ЦЕК</a>"); ?>
+            </p>
+            <p class="pull-right"><?//= Yii::powered() ?> 
+            <img class='footer_img' src="../Logo.png">
+            </p>
+            <?php
+                $day = date('j');
+                $month = date('n');
+                $day_week = date('w');
+                switch ($day_week)  {
+                    case 0: 
+                        $dw = 'нед.';
+                        break;
+                    case 1: 
+                        $dw = 'пон.';
+                        break;
+                    case 2: 
+                        $dw = 'вівт.';
+                        break;
+                    case 3: 
+                        $dw = 'середа';
+                        break;
+                    case 4: 
+                        $dw = 'четв.';
+                        break;
+                    case 5: 
+                        $dw = 'п’ятн.';
+                        break;
+                    case 6: 
+                        $dw = 'суб.';
+                        break;
+                    
+                }    
+                $day = $day.' '.$dw;
+            ?>
+            
+            <table width="100%" class="table table-condensed" id="calendar_footer">
+            <tr>
+                <th width="8.33%">
+                    <?php
+                    if($month==1) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                   
+                </th> 
+                <th width="8.33%">
+                    <?php
+                    if($month==2) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th> 
+                <th width="8.33%">
+                   <?php
+                    if($month==3) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th> 
+                <th width="8.33%">
+                    <?php
+                    if($month==4) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                    <?php
+                    if($month==5) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                    <?php
+                    if($month==6) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                    <?php
+                    if($month==7) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                    <?php
+                    if($month==8) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                    <?php
+                    if($month==9) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                     <?php
+                    if($month==10) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                     <?php
+                    if($month==11) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                <th width="8.33%">
+                     <?php
+                    if($month==12) echo '<div id="on_ceil">'.$day.'</div>';
+                    ?>
+                </th>
+                </tr>
+                <tr>
+                    
+                <td>   
+                     <?= Html::encode("січень") ?>
+                </td> 
+                <td>
+                     <?= Html::encode("лютий") ?>
+                </td> 
+                <td>
+                     <?= Html::encode("березень") ?>
+                </td> 
+                <td>
+                     <?= Html::encode("квітень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("травень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("червень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("липень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("серпень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("вересень") ?>
+                </td>
+                <td>
+                     <?= Html::encode("жовтень") ?>
+                </td>
+                <td >
+                     <?= Html::encode("листопад") ?>
+                </td>
+                <td>
+                     <?= Html::encode("грудень") ?>
+                </td>
+               </tr>
+
+                
+            </table>  
+            
         </div>
     </footer>
 
