@@ -9,13 +9,14 @@ use yii\grid\ActionColumn;
 use yii\grid\CheckboxColumn;
 use yii\grid\SerialColumn;
 
-$this->title = 'Всього знайдено: '.$kol;
+$this->title = 'Телефонний довідник';
+$zag = 'Всього знайдено: '.$kol;
 //$this->params['breadcrumbs'][] = $this->title;
 
 ?>
 <?//= Html::a('Добавити', ['createtransp'], ['class' => 'btn btn-success']) ?>
 <div class="site-spr">
-    <h5><?= Html::encode($this->title) ?></h5>
+    <h5><?= Html::encode($zag) ?></h5>
     <?php if(!isset(Yii::$app->user->identity->role)) { ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -39,9 +40,21 @@ $this->title = 'Всього знайдено: '.$kol;
 //                        $q2 = only_digit1($q2);
 //                        if(strlen($q)==9) $q = '0'.$q;
 //                    }
-                    $q = only_digit1($q);
-                    if(strlen($q)==9) $q = '0'.$q;
-                    return tel_normal($q);
+                    $tels = explode(',',$q);
+                    $s = '';
+                    $i = 0;
+                    foreach ($tels as $t) {
+                        $i++;
+                        $q = only_digit($t);
+                        if (strlen($q) == 9) $q = '0' . $q;
+                        $q = tel_normal($q);
+                        if($i>1)
+                            $s.=','.chr(13).$q;
+                        else
+                            $s=$q;
+
+                    }
+                    return $s;
                 },
                 'format' => 'raw'
             ],
@@ -115,9 +128,21 @@ $this->title = 'Всього знайдено: '.$kol;
 //                        $q2 = only_digit1($q2);
 //                        if(strlen($q)==9) $q = '0'.$q;
 //                    }
-                    $q = only_digit1($q);
-                    if(strlen($q)==9) $q = '0'.$q;
-                    return tel_normal($q);
+                    $tels = explode(',',$q);
+                    $s = '';
+                    $i = 0;
+                    foreach ($tels as $t) {
+                        $i++;
+                        $q = only_digit($t);
+                        if (strlen($q) == 9) $q = '0' . $q;
+                        $q = tel_normal($q);
+                        if($i>1)
+                            $s.=','.chr(13).$q;
+                        else
+                            $s=$q;
+
+                    }
+                    return $s;
                 },
                 'format' => 'raw'
             ],

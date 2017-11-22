@@ -497,7 +497,7 @@ a.desc:after {
     background-position: center center;
     background-repeat: no-repeat;
     background-size: cover;
-    height: 700px;
+    height: 800px;
     padding: 0;
     margin-top: -20px;
     /*width: 1900px;*/
@@ -711,6 +711,7 @@ body{
     text-align: center;
     /*background-color: #F5F5F5;*/ 
     background-color: #493A34;
+/*    //background-color: #2C2C2D;*/
     border: none;
     color: #C5AB8F;
     margin: auto;
@@ -750,10 +751,12 @@ body{
 
 .footer {
    background-color: #493A34;
+   /*background-color: #2C2C2D;*/
 }
 
 #container_footer {
     background-color: #493A34;
+    /*background-color: #2C2C2D;*/
     width: auto;
     margin-left: 0;
 }
@@ -770,4 +773,7 @@ body{
     margin-right: 100px;
     border-radius: 20px;
    
+}
+.site-spr{
+    margin-left: 30px;
 }

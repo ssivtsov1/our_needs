@@ -5,11 +5,11 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-$this->title = '';
+$this->title = 'Телефонний довідник (ЦЄК)';
 ?>
 
 <div class="site-login" <?php if(isset(Yii::$app->user->identity->role)) echo 'id="main_block"'; ?>>
-    <h2><?= Html::encode($this->title) ?></h2>
+    <h2><?= Html::encode('') ?></h2>
       <div class="row">
         <div <?php if(isset(Yii::$app->user->identity->role)) echo 'class="col-lg-8"'; else echo 'class="col-lg-6"'; ?>>
             <?php $form = ActiveForm::begin(['id' => 'inputdata',

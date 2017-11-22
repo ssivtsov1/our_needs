@@ -68,10 +68,16 @@ class Employees extends \yii\db\ActiveRecord
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
+        $tel = trim($this->tel_mob);
         $query->andFilterWhere(['=', 'tab_nom', $this->tab_nom]);
         $query->andFilterWhere(['like', 'fio', $this->fio]);
         $query->andFilterWhere(['like', 'post', $this->post]);
-        $query->andFilterWhere(['like', 'tel_mob', only_digit($this->tel_mob)]);
+        if(substr($tel,0,1)=='0' &&  strlen($tel)>1){
+            $fnd = '%'.substr($tel,1).'%';
+            $query->andFilterWhere(['like', 'tel_mob', $fnd, false]);}
+        else
+            $query->andFilterWhere(['like', 'tel_mob', only_digit($this->tel_mob)]);
+
         $query->andFilterWhere(['like', 'tel', $this->tel]);
         $query->andFilterWhere(['like', 'tel_town', only_digit($this->tel_town)]);
         $query->andFilterWhere(['like', 'main_unit', $this->main_unit]);

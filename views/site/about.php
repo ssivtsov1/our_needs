@@ -2,12 +2,13 @@
 use yii\helpers\Html;
 
 /* @var $this yii\web\View */
-$this->title = $model->title;
+$zag = $model->title;
+$this->title = 'Телефонний довідник';
 //$this->params['breadcrumbs'][] = $this->title;
 ?>
 <!--<div class="site-about">-->
 <div class=<?= $model->style_title ?> >
-    <h4><?= Html::encode($this->title) ?></h4>
+    <h4><?= Html::encode($zag) ?></h4>
 </div>
 
 <div class=<?= $model->style1 ?> >

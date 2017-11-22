@@ -29,8 +29,25 @@ $this->title = 'Телефонний довідник працівників';
             ['attribute' =>'tel_mob',
                 'value' => function ($model){
                     $q = trim($model->tel_mob);
-                    if(strlen($q)==9) $q = '0'.$q;
-                    return tel_normal($q);
+
+                    $tels = explode(',',$q);
+                    $s = '';
+                    $i = 0;
+                    foreach ($tels as $t) {
+                        $i++;
+                        $q = only_digit($t);
+                        if (strlen($q) == 9) $q = '0' . $q;
+                        $q = tel_normal($q);
+                        if($i>1)
+                            $s.=','.chr(13).$q;
+                        else
+                            $s=$q;
+
+                    }
+                    return $s;
+
+//                    if(strlen($q)==9) $q = '0'.$q;
+//                    return tel_normal($q);
                 },
                 'format' => 'raw'
             ],
@@ -118,8 +135,24 @@ $this->title = 'Телефонний довідник працівників';
             ['attribute' =>'tel_mob',
                 'value' => function ($model){
                     $q = trim($model->tel_mob);
-                    if(strlen($q)==9) $q = '0'.$q;
-                    return tel_normal($q);
+
+                    $tels = explode(',',$q);
+                    $s = '';
+                    $i = 0;
+                    foreach ($tels as $t) {
+                        $i++;
+                        $q = only_digit($t);
+                        if (strlen($q) == 9) $q = '0' . $q;
+                        $q = tel_normal($q);
+                        if($i>1)
+                            $s.=','.chr(13).$q;
+                        else
+                            $s=$q;
+
+                    }
+                    return $s;
+//                    if(strlen($q)==9) $q = '0'.$q;
+//                    return tel_normal($q);
                 },
                 'format' => 'raw'
             ],
