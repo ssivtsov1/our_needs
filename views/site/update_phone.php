@@ -8,6 +8,8 @@ use yii\helpers\Url;
 use app\models\spr_res;
 use app\models\status_sch;
 $role = Yii::$app->user->identity->role;
+//debug($model)
+
 ?>
 <script>
    window.onload=function(){
@@ -46,6 +48,20 @@ $role = Yii::$app->user->identity->role;
     <?= $form->field($model, 'line')->textInput() ?>
     <?= $form->field($model, 'type_tel')->textInput() ?>
     <?= $form->field($model, 'phone_type')->textInput() ?>
+<!--   <p>  </p>-->
+    <?= $form->field($model, 'photo')->fileInput() ?>
+
+    <? if($model->photo)
+        echo Html::a('Видалити фото', ['del_photo', 'id' => $model->id,
+            'file_path' => $model->photo,'sql' => $sql], [
+            'class' => 'btn btn-danger',
+            'data' => [
+                'confirm' => 'Ви впевнені, що хочете видалити це фото?',
+                'method' => 'post',
+            ]]);  ?>
+
+        <br>
+        <br>
 
     <div class="form-group">
         <?= Html::submitButton($model->isNewRecord ? 'ОК' : 'OK', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>

@@ -19,13 +19,17 @@ class InputData extends Model
     public $tel;              // Телефон внутр.
     public $tel_town;         // Телефон городской.
     public $email;            //  E-Mail 
-    
+    public $id_t;
+    public $sex;              // Пол
+    public $photo;            // Фото сотрудника
+
     private $_user;
 
     public function attributeLabels()
     {
         return [
             'main_unit' => 'Головний підрозділ:',
+            'id_t' => '',
             'unit_1' => 'Підрозділ, підпорядкований головному:',
             'unit_2' => 'Група:',
             'fio' => 'П.І.Б.:',
@@ -34,6 +38,8 @@ class InputData extends Model
             'tel' => 'Телефон внутрішній:',
             'tel_town' => 'Телефон міський:',
             'email' => 'Адрес пошти:',
+            'sex' => 'Стать:',
+            'photo' => 'Фото:',
         ];
     }
 
@@ -47,9 +53,13 @@ class InputData extends Model
             ['fio', 'safe'],
             ['post', 'safe'],
             ['tel', 'safe'],
-            ['tel_mob', 'safe'],
+            //['tel_mob', 'safe'],
+            ['tel_mob', 'match', 'pattern' => '/^[0-9-\s]*$/i'],
             ['tel_town', 'safe'],
             ['email', 'safe'],
+            ['id_t', 'safe'],
+            ['sex', 'safe'],
+            ['photo', 'file'],
         ];
     }
 

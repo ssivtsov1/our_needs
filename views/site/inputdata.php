@@ -8,10 +8,26 @@ use yii\helpers\Url;
 $this->title = 'Телефонний довідник (ЦЄК)';
 ?>
 
-<div class="site-login" <?php if(isset(Yii::$app->user->identity->role)) echo 'id="main_block"'; ?>>
+<script>
+     window.addEventListener('load', function(){
+       $('#inputdata-id_t').each(function () {
+        var txt = $(this).text()
+        $(this).html(
+            "<span style='color:#111111" + ";'></span>" + txt)
+})
+    }
+    
+</script>
+
+
+
+<div class="site-login" <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'id="main_block"'; ?>>
     <h2><?= Html::encode('') ?></h2>
       <div class="row">
-        <div <?php if(isset(Yii::$app->user->identity->role)) echo 'class="col-lg-8"'; else echo 'class="col-lg-6"'; ?>>
+         
+          <?php //debug(Yii::$app->user->identity); ?> 
+          
+        <div <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'class="col-lg-8"'; else echo 'class="col-lg-6 tel_left_side"'; ?>>
             <?php $form = ActiveForm::begin(['id' => 'inputdata',
                 'options' => [
                     'class' => 'form-horizontal col-lg-25',
@@ -19,108 +35,13 @@ $this->title = 'Телефонний довідник (ЦЄК)';
                     
                 ]]); ?>
 
-            <?=$form->field($model, 'main_unit')->dropDownList(
-                    ArrayHelper::map(app\models\employees::findbysql(
-                            "select 607 as id_name,0 as id,null as nazv,'Всі підрозділи' as main_unit
-                                union
-                                select min(a.id_name) as id_name,b.id,b.nazv,a.main_unit 
-                                from vw_phone a 
-                                left join spr_res b on a.main_unit = b.nazv
-                                group by b.id,b.nazv,a.main_unit")->all(), 'id_name', 'main_unit'),
-            [
-            'prompt' => 'Виберіть головний підрозділ','onchange' => '$.get("' . Url::to('/phone/web/site/getunit_1?id_name=') .
-                '"+$(this).val(),
-                    function(data) {
-                         $("#inputdata-unit_1").empty();
-                         $("#inputdata-unit_2").empty();
-   
-                         
-                         localStorage.setItem("main_unit", data.main_unit);
-                         for(var i = 0; i<data.unit.length; i++) {
-                         var q = data.unit[i].unit_1;
-                         if(q==null) continue;
-                         var q1 = q.substr(3);
-                         var n = q.substr(0,3);
-                         $("#inputdata-unit_1").append("<option value="+n+
-                         " style="+String.fromCharCode(34)+"font-size: 14px;"+
-                         String.fromCharCode(34)+">"+q1+"</option>");
-                        } 
-                         $("#inputdata-unit_1").change();
-                  });',]); ?>
+<!--            a.main_unit<>'Павлоградські РЕМ' and-->
 
-            <?=$form->field($model, 'unit_1')->
-            dropDownList(ArrayHelper::map(
-                app\models\employees::findbysql('
-                select 607 as id," Всі підрозділи" as unit_1
-                union
-                Select min(id) as id,unit_1 
-                from vw_phone 
-                where LENGTH(ltrim(rtrim(unit_1)))<>0
-                 group by unit_1 
-                 order by unit_1')
-                    ->all(), 'id', 'unit_1'),
-                ['prompt' => 'Виберіть підрозділ підпорядкований головному',
-                    'onchange' => '$.get("' . Url::to('/phone/web/site/getunit?id=') .
-                        '"+$(this).val()+"&main_unit="+localStorage.getItem("main_unit"),
-                    function(data) {
-                         $("#inputdata-unit_2").empty();
-                         for(var i = 0; i<data.data.length; i++) {
-                         var q = data.data[i].unit_2;
-                         if(q==null) continue;
-                         var q1 = q.substr(3);
-                         var n = q.substr(0,3);
-                         $("#inputdata-unit_2").append("<option value="+n+
-                         " style="+String.fromCharCode(34)+"font-size: 14px;"+
-                         String.fromCharCode(34)+">"+q1+"</option>");
-                        } 
-                         
-                  });',]); ?>
 
-            <?=$form->field($model, 'unit_2')->
-            dropDownList(ArrayHelper::map(
-                app\models\employees::findbysql('
-                select 607 as id," Всі підрозділи" as unit_2
-                union
-                Select min(id) as id,unit_2 
-                from vw_phone 
-                where LENGTH(ltrim(rtrim(unit_2)))<>0
-                 group by unit_2
-                  order by unit_2')
-                    ->all(), 'id', 'unit_2'),
-                ['prompt' => 'Виберіть підрозділ'
-                    ]); ?>
-
-            <?= $form->field($model, 'fio',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
-            . '<span class="glyphicon glyphicon-user"></span></span>{input}</div>'])
-                ->textInput(['onDblClick' => 'rmenu($(this).val(),"#inputdata-fio")'])?>
-
-            <div class='rmenu' id='rmenu-inputdata-fio'></div>
-
-            <?= $form->field($model, 'tel_mob',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
-            . '<span class="glyphicon glyphicon-phone"></span></span>{input}</div>']) ?>
-            <?= $form->field($model, 'tel_town',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
-                . '<span class="glyphicon glyphicon-phone-alt"></span></span>{input}</div>']) ?>
-            <?= $form->field($model, 'tel',['inputTemplate' => '<div class="input-group"><span class="input-group-addon">'
-                . '<span class="glyphicon glyphicon-earphone"></span></span>{input}</div>']) ?>
-            <?= $form->field($model, 'post')->textInput(['onDblClick' => 'rmenu($(this).val(),"#inputdata-post")']) ?>
-
-            <div class='rmenu' id='rmenu-inputdata-post'></div>
-
-<!--            --><?//= $form->field($model, 'email') ?>
-
-            <div class="form-group">
-                <?= Html::submitButton('OK', ['class' => 'btn btn-primary','id' => 'btn_find','onclick'=>'dsave()']); ?>
-<!--                --><?//= Html::a('OK', ['/CalcWork/web'], ['class' => 'btn btn-success']) ?>
-            </div>
-
-            <?php
-            
-            $session = Yii::$app->session;
-            $session->open();
-            $session->set('view', 0);
-            
-            ActiveForm::end(); ?>
+            <?php ActiveForm::end(); ?>
         </div>
+          
+
     </div>
 </div>
 
@@ -131,13 +52,139 @@ $this->title = 'Телефонний довідник (ЦЄК)';
 
         localStorage.setItem("fio",$('#inputdata-fio').val());
     }
+    function sel_fio(elem,id) {
+        //localStorage.setItem("id_fio", id);
+        var p,r;
+        elem=$.trim(elem);
+        //alert(elem+'1');
+        p=elem.indexOf('  ')+1;
+        r=elem.substr(0,p);
+        r=$.trim(r);
+       
+        if(p>0)
+            $("#inputdata-fio").val(r);
+        else
+            $("#inputdata-fio").val(elem);
+        
+        $(".field-inputdata-id_t").hide();
+        $("#inputdata-id_t").hide();
+        //$("#klient-search_street").val('');
+        
+    }
+     function sel_fio1(elem,event) {
+        //alert(event.keyCode);
+        if(event.keyCode==13) {
+            $("#inputdata-fio").val(elem);
+            $("#inputdata-id_t").hide();
+        }
+    }
+    
+     function normtel(p){
+        if(p==null) return '';
+        //if(!(p.indexOf(',')==-1)) return '';
+        var pos = p.indexOf(',');
+        var qt,jt,frez='',origin;
+        origin=p;
+        if (pos==-1)
+            qt=1;
+        else
+            qt=2;
+        if(qt==2)
+            $("#inputdata-id_t").css("font-size", 13);
+        else
+            $("#inputdata-id_t").css("font-size", 14);
+        for(jt=1;jt<=qt;jt++) {
+        if (pos>-1 && jt==1)
+            p=origin.substr(0,pos); 
+        if (pos>-1 && jt==2)
+            p=origin.substr(pos+1);
+        //alert(p);
+        if(!(p.substr(0,1)=='0'))
+            p='0'+p; 
+        var y,i,c,tel = '',kod,op,flag=0,rez='';
+        y = p.length;
+
+        for(i=0;i<y;i++)
+        {
+            c = p.substr(i,1);
+            kod=p.charCodeAt(i);
+            if(kod>47 && kod<58) tel+=c;
+        }
+        op = tel.substr(0,3);
+        y = tel.length;
+        if(y<10) {
+            return '';
+        }
+            switch(op) {
+                case '050':  flag = 1;
+                    break;
+                case '096':  flag = 1;
+                    break;
+                case '097':  flag = 1;
+                    break;
+                case '098':  flag = 1;
+                    break;
+                case '099':  flag = 1;
+                    break;
+
+                case '091':  flag = 1;
+                    break;
+                case '063':  flag = 1;
+                    break;
+                case '073':  flag = 1;
+                    break;
+                case '067':  flag = 1;
+                    break;
+                case '066':  flag = 1;
+                    break;
+
+                case '093':  flag = 1;
+                    break;
+                case '095':  flag = 1;
+                    break;
+                case '039':  flag = 1;
+                    break;
+                case '068':  flag = 1;
+                    break;
+                case '092':  flag = 1;
+                    break;
+                case '094':  flag = 1;
+                    break;
+            }
+
+            var add = tel.substr(3,3);
+            rez+=add+'-';
+            add = tel.substr(6,2);
+            rez+=add+'-';
+            add = tel.substr(8);
+            rez+=add;
+
+        if(flag) {
+            rez = op+' '+rez;
+        }
+        else{
+            rez = '('+op+')'+' '+rez;
+        }
+            
+            if(qt==2 && jt==1)
+                frez=rez+', ';
+            if(qt==2 && jt==2)
+                frez+=rez;
+             if(qt==1)
+                frez=rez;
+        }
+        return frez;
+    }
+
+function stringFill(x, n) { 
+    var s = ''; 
+    while (s.length < n) s += x; 
+    return s; 
+} 
 
 
     //window.onload=function(){
-    $(document).ready(){
-        alert( '1' );
-
-    };
+   
 </script>
 
 

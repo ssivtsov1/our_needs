@@ -287,4 +287,133 @@ function num2text_ua($num) {
     $fc = mb_strtoupper(mb_substr($str, 0, 1,$code),$code);
     return $fc.mb_substr($str,1,256,$code);
 }
+
+function recode_c($s) {
+$s1='';
+$y=strlen($s);
+for($i=0;$i<$y;$i++){
+$c=substr($s,$i,1);
+switch($c) {
+    case 'q':
+        $nc = 'й';
+        break;
+    case 'w':
+        $nc = 'ц';
+        break;
+    case 'e':
+        $nc = 'у';
+        break;
+    case 'r':
+        $nc = 'к';
+        break;
+    case 't':
+        $nc = 'е';
+        break;
+
+    case 'y':
+        $nc = 'н';
+        break;
+    case 'u':
+        $nc = 'г';
+        break;
+    case 'i':
+        $nc = 'ш';
+        break;
+    case 'o':
+        $nc = 'щ';
+        break;
+    case 'p':
+        $nc = 'з';
+        break;
+
+    case '[':
+        $nc = 'х';
+        break;
+    case ']':
+        $nc = 'ъ';
+        break;
+    case 'a':
+        $nc = 'ф';
+        break;
+    case 's':
+        $nc = 'і';
+        break;
+    case 's':
+        $nc = 'ы';
+        break;
+    case 'd':
+        $nc = 'в';
+        break;
+
+    case 'f':
+        $nc = 'а';
+        break;
+    case 'g':
+        $nc = 'п';
+        break;
+    case 'h':
+        $nc = 'р';
+        break;
+    case 'j':
+        $nc = 'о';
+        break;
+    case 'k':
+        $nc = 'л';
+        break;
+
+    case 'l':
+        $nc = 'д';
+        break;
+    case ';':
+        $nc = 'ж';
+        break;
+    case "'":
+        $nc = 'э';
+        break;
+    case 'z':
+        $nc = 'я';
+        break;
+    case 'x':
+        $nc = 'ч';
+        break;
+
+    case 'c':
+        $nc = 'с';
+        break;
+    case 'v':
+        $nc = 'м';
+        break;
+    case "b":
+        $nc = 'и';
+        break;
+    case 'n':
+        $nc = 'т';
+        break;
+    case 'm':
+        $nc = 'ь';
+        break;
+    case ',':
+        $nc = 'б';
+
+        break;
+    case '.':
+        $nc = 'ю';
+        break;
+    case '>':
+        $nc = 'ю';
+        break;
+    case '<':
+        $nc = 'б';
+        break;
+    case ':':
+        $nc = 'ж';
+        break;
+    case '{':
+        $nc = 'х';
+        break;
+}
+$s1.=$nc;
+}
+return $s1;
+    }
 ?>

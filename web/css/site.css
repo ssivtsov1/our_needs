@@ -710,7 +710,8 @@ body{
     font-size: 10px;
     text-align: center;
     /*background-color: #F5F5F5;*/ 
-    background-color: #493A34;
+    /*background-color: #493A34;*/
+    background-color: #2D3336;
 /*    //background-color: #2C2C2D;*/
     border: none;
     color: #C5AB8F;
@@ -750,12 +751,14 @@ body{
 }
 
 .footer {
-   background-color: #493A34;
+   /*background-color: #493A34;*/
+    background-color: #2D3336;
    /*background-color: #2C2C2D;*/
 }
 
 #container_footer {
-    background-color: #493A34;
+    /*background-color: #493A34;*/
+    background-color: #2D3336;
     /*background-color: #2C2C2D;*/
     width: auto;
     margin-left: 0;
@@ -776,4 +779,138 @@ body{
 }
 .site-spr{
     margin-left: 30px;
+}
+.flag_like {
+    color: #1A0DAB;
+    font-weight: 600;
+    text-decoration: underline;
+    
+}
+.tel_left_side{
+    float: left;
+}
+.tel_right_side{
+    float: right;
+    width: 37%;
+    /*margin-top: 12px;*/
+    padding-top: 10px;
+    padding-left: 7px;
+    padding-right:7px;
+    box-shadow: 0 1px 3px 0px rgba(0,0,0,0.27);
+}
+
+.tel_right_side a {
+    /*color: #22579e;*/
+    color: #8f0c1c;
+    font: bold 16px Arial;
+
+}
+
+.tel_news {
+    font: bold 16px Arial;
+    border-bottom: solid 1px #d9d9d9;;
+    text-align: center;
+    color: #22579e;
+    text-decoration: underline;
+}
+
+.tel_news_r {
+    border-bottom: solid 1px #d9d9d9;
+}
+.tel_news_n {
+    float: left;
+    width: 15%;
+    /*color: #fda237;*/
+    color: green;
+    /*color: #fa225a;*/
+}
+.tel_news_block {
+    float: right;
+    width: 85%;
+
+}
+.field-inputdata-id_t{
+    display: none;
+}
+.weather{
+    float: right;
+    /*width: 20%;*/
+    /*margin-top: 12px;*/
+    padding-top: 40px;
+    padding-left: 7px;
+}
+
+#MeteoInformerWrap {
+    float: right;
+    padding-top: 40px;
+    margin-right: 150px;
+    width: 200px;
+    height:150px;
+}
+
+#meteoInforWrap .meteo_infor_other{
+    display: none;
+}
+
+.gersazunima {
+    color: #e8e4e4;
+    text-shadow: 1px 1px 0 #252424, -1px 1px 0 #191717, 1px -1px 0 #1b1919, -1px -1px 0 #191717;
+}
+
+.kigdsaxtun {
+    color: #1a1a1a;
+    font: bold 13px Arial;
+    text-shadow: 0 -1px 4px #FFFFFF, 0 -2px 10px #FFFF00, 0 -10px 20px #00BFFF , 0 -15px 20px #71D0F0;;
+}
+
+#header-fixed {
+    position: fixed;
+    top: 52px;
+    display:none;
+    background-color:lightgrey;
+    left: 7%;
+}
+
+td img {
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.image {
+    margin:30px;
+    float:left;
+    cursor:pointer;
+    max-height:100px;
+}
+
+.popup {
+    position: absolute;
+    height:400px;
+    width:400px;
+    top:40%;
+    left:40%;
+    display:none;
+    text-align:center;
+}
+
+.popup_bg {
+    background:rgba(0,0,0,0.4);
+    position:absolute;
+    z-index:1;
+    height:100%;
+    width:100%;
+}
+
+
+.popup_img {
+    position: relative;
+    margin:0 auto;
+    z-index:2;
+    /*max-height:94%;*/
+    /*max-width:94%;*/
+    height:270px;
+    width:200px;
+    margin:1% 0 0 0;
+
+
 }

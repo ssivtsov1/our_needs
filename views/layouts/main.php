@@ -26,37 +26,11 @@ AppAsset::register($this);
 <?php $this->beginBody() ?>
     <div class="wrap">
         <?php
-
-
         $flag = 1;
         $main = 0;
 
-         if(!isset(Yii::$app->user->identity->id_res))
-                $flag=0;
-         else
-             $flag = Yii::$app->user->identity->id_res;
-
-                 
-
-       // die;
-        if(isset(Yii::$app->user->identity->role)) {
-                $adm = Yii::$app->user->identity->role;
-                if ($adm==3)
-                {
-                    $main=1;
-                    $this->params['admin'][] = "Режим адміністратора: ";
-                }
-                else
-                    $this->params['admin'][] = "Режим користувача: ";
-         }
-
-       
-        if(!isset(Yii::$app->user->identity->role))
-            $main=2;
-      
-        if($main!=1)    
         NavBar::begin([
-                'brandLabel' => 'Телефонний довідник',
+                'brandLabel' => 'Інформація СПС',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     //'class' => 'navbar-inverse navbar-fixed-top',
@@ -64,84 +38,22 @@ AppAsset::register($this);
                     
                 ],
             ]);
-        else
-          NavBar::begin([
-                'brandLabel' => 'Телефонний довідник (режим адміністратора)',
-                'brandUrl' => Yii::$app->homeUrl,
-                'options' => [
-                    //'class' => 'navbar-inverse navbar-fixed-top',
-                    'class' => 'navbar-default navbar-fixed-top',
-                    
-                ],
-            ]);  
 
 
-       
-       
-            switch ($main) {
-           
-
-            case 1:
-                echo Nav::widget([
+                     echo Nav::widget([
                     'options' => ['class' => 'navbar-nav navbar-right'],
                     'items' => [
                         ['label' => Html::tag('span',' Головна',['class' => 'glyphicon glyphicon-home']) ,
                             'url' => ['/site/index']],
-                        
-                        ['label' => 'Працівники', 'url' => ['/site/employees']],
+                        ['label' => 'Плани', 'url' => ['/site/plans']],
+                        ['label' => 'Щоденник', 'url' => '/site/diary'],
+                        ['label' => 'Телефони', 'url' => '/site/phones'],
                         ['label' => 'Про сайт', 'url' => ['/site/about']],
-                        ['label' => Html::tag('span',' Вийти',['class' => 'glyphicon glyphicon-log-out']),
-                             'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
-                        
+
                     ],
                     'encodeLabels' => false,
                 ]);
-                break;
-            case 0:
-                echo Nav::widget([
-                    'options' => ['class' => 'navbar-nav navbar-right'],
-                    'items' => [
-                       ['label' => 'Головна', 'url' => ['/site/index']],
-                        
-                        ['label' => 'Працівники', 'url' => ['/site/employees']],
-                        ['label' => 'Про сайт', 'url' => ['/site/about']],
-                        //['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
-                        /*
-                        Yii::$app->user->isGuest ?
-                            ['label' => 'Login', 'url' => ['/site/login']] :
-                            ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                                'url' => ['/site/logout'],
-                                'linkOptions' => ['data-method' => 'post']],
-                         *
-                         */
-                    ],
-                ]);
-                break;
-            case 2:
-                echo Nav::widget([
-                    'options' => ['class' => 'navbar-nav navbar-right'],
-                    'items' => [
-                     
-                        ['label' => Html::tag('span',' Головна',['class' => 'glyphicon glyphicon-home']) ,
-                            'url' => ['/site/index']],
-                        
-                        ['label' => 'Працівники', 'url' => ['/site/employees']],
-                        ['label' => 'Про сайт', 'url' => ['/site/about']],
-                        
-                        //['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
-                        /*
-                        Yii::$app->user->isGuest ?
-                            ['label' => 'Login', 'url' => ['/site/login']] :
-                            ['label' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                                'url' => ['/site/logout'],
-                                'linkOptions' => ['data-method' => 'post']],
-                         *
-                         */
-                    ],
-                    'encodeLabels' => false,
-                ]);
-                break;
-        }
+
             NavBar::end();
         ?>
 
@@ -194,11 +106,13 @@ AppAsset::register($this);
             </div>
 
             <?= Breadcrumbs::widget([
-                'homeLink' => ['label' => 'Головна', 'url' => '/phone'],
+                'homeLink' => ['label' => 'Головна', 'url' => '/info'],
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
             ]) ?>
              
             <?= $content ?>
+            
+            
             
         </div>
         <section class="hero_area">
@@ -213,7 +127,7 @@ AppAsset::register($this);
             <?= Html::a('Головна',["index"],['class' => 'a_main']); ?> &nbsp &nbsp
             <?= Html::a("<a class='a_main' href='http://cek.dp.ua'>сайт ПрАТ ПЕЕМ ЦЕК</a>"); ?>
             </p>
-            <p class="pull-right"><?//= Yii::powered() ?> 
+            <p class="pull-right">
             <img class='footer_img' src="../Logo.png">
             </p>
             <?php
