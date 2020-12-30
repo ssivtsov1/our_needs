@@ -1,3 +1,4 @@
+
 <?php
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
@@ -45,9 +46,9 @@ AppAsset::register($this);
                     'items' => [
                         ['label' => Html::tag('span',' Головна',['class' => 'glyphicon glyphicon-home']) ,
                             'url' => ['/site/index']],
-                        ['label' => 'Плани', 'url' => ['/site/plans']],
-                        ['label' => 'Щоденник', 'url' => '/site/diary'],
-                        ['label' => 'Телефони', 'url' => '/site/phones'],
+                        ['label' => 'Плани', 'url' => ['/site/plan_forma']],
+                        ['label' => 'Щоденник', 'url' => ['/site/a_diary_forma']],
+                        ['label' => 'Телефони', 'url' => ['/site/phones_sap']],
                         ['label' => 'Про сайт', 'url' => ['/site/about']],
 
                     ],

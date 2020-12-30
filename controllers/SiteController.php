@@ -2,6 +2,12 @@
 
 namespace app\controllers;
 
+use app\models\A_diary;
+use app\models\A_diary_search;
+use app\models\phones_sap;
+use app\models\phones_sap_search;
+use app\models\Plan;
+use app\models\plan_forma;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -320,4 +326,187 @@ class SiteController extends Controller
         Yii::$app->user->logout();
         return $this->goHome();
     }
+
+//Щеденники
+
+    public function actionA_diary_forma()
+    {
+        $model = new A_diary();
+        $searchModel = new A_diary_search();
+//    $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//        $model = $model::find()->all();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//        debug('1111111111111');
+            $sql = "SELECT date,txt,projects,status
+FROM vw_diary 
+where 1=1";
+//            if (!empty($model->txt)) {
+//                $sql2 = '(select txt from plan where id ='. $model->txt.')';
+//                $model->txt = $sql2;
+//                $sql = $sql . ' and txt =' . $model->txt  ;
+//            }
+//        debug($sql);
+//        return;
+            if (!empty($model->projects)) {
+                $sql = $sql . ' and id_project =' . "'" . $model->projects . "'";
+            }
+//        debug($sql);
+//        return;
+            if (!empty($model->status)) {
+                $sql = $sql . ' and id_status =' . "'" . $model->status . "'";
+            }
+//                debug($sql);
+//        return;
+//            if (!empty($model->year)) {
+//                if ($model->year == '1')
+//                    $model->year = '2018';
+//                if ($model->year == '2')
+//                    $model->year = '2019';
+//                $sql = $sql . ' and year =' . "'" . $model->year . "'";
+//            }
+////                        debug($sql);
+////        return;
+            $sql = $sql . ' ORDER BY 3';
+//            debug($sql);
+//            return;
+//            $data = Off_site::findbysql($sql)->asArray()
+//                ->all();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//            debug($sql);
+//            return;
+            $dataProvider->pagination = false;
+            return $this->render('a_diary_forma_2', [
+                'model' => $searchModel,'dataProvider' => $dataProvider,'searchModel' => $searchModel,
+            ]);
+        } else {
+            return $this->render('a_diary_forma', compact('model'));
+        }
+    }
+
+
+    public function actionPlan_forma()
+    {
+        $model = new Plan_forma();
+        $searchModel = new Plan();
+//    $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//        $model = $model::find()->all();
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//        debug('1111111111111');
+            $sql = "SELECT projects, plan_status, year, month, txt, speed
+FROM vw_plans 
+where 1=1";
+
+            if (!empty($model->projects)) {
+                $sql = $sql . ' and id_project =' . "'" . $model->projects . "'";
+            }
+//        debug($sql);
+//        return;
+            if (!empty($model->plan_status)) {
+                $sql = $sql . ' and id_status =' . "'" . $model->plan_status . "'";
+            }
+//                debug($sql);
+//        return;
+            if (!empty($model->year)) {
+                if ($model->year == '1')
+                    $model->year = '2018';
+                if ($model->year == '2')
+                    $model->year = '2019';
+                $sql = $sql . ' and year =' . "'" . $model->year . "'";
+            }
+//                        debug($sql);
+//        return;
+            if (!empty($model->month)) {
+                $sql = $sql . ' and id_month =' . "'" . $model->month . "'";
+            }
+            if (!empty($model->txt)) {
+                $sql2 = '(select txt from plan where id ='. $model->txt.')';
+                $model->txt = $sql2;
+                $sql = $sql . ' and txt =' . $model->txt  ;
+            }
+//        debug($sql);
+//        return;
+            if (!empty($model->speed)) {
+                $sql2 = '(select speed from plan where id ='. $model->speed.')';
+                $model->speed = $sql2;
+                $sql = $sql . ' and speed =' . $model->speed;
+            }
+//        debug($sql);
+//        return;
+            $sql = $sql . ' ORDER BY 1';
+//            debug($model);
+//            return;
+//            $data = Off_site::findbysql($sql)->asArray()
+//                ->all();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//            debug($sql);
+//            return;
+            $dataProvider->pagination = false;
+            return $this->render('plan_forma_2', [
+                'model' => $searchModel,'dataProvider' => $dataProvider,'searchModel' => $searchModel,
+            ]);
+        } else {
+            return $this->render('plan_forma', compact('model'));
+
+        }
+    }
+
+
+
+
+    public function actionPhones_sap()
+    {
+        $model = new phones_sap();
+        $searchModel = new phones_sap_search();
+//    $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//        $model = $model::find()->all();
+//        Yii::$app->response->format = Response::FORMAT_JSON;
+//        $c = mb_substr($fio,0,1,"UTF-8");
+//        $code = ord($c);
+//        if($code<128) $fio=recode_c(strtolower($fio));
+//
+//        $name1 = trim(mb_strtolower($fio,"UTF-8"));
+//        $name2 = trim(mb_strtoupper($fio,"UTF-8"));
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//        debug('1111111111111');
+            $sql = "SELECT *
+FROM contacty_sap
+where 1=1";
+            if (!empty($model-> fio)) {
+                $sql = $sql . " and fio like '" .$model->fio ."%'";
+            }
+//                debug($sql);
+//        return;
+            if (!empty($model-> company)) {
+                if ($model->company == '1')
+                    $model->company = '"Виконавець"';
+                if ($model->company == '2')
+                    $model->company = '"ВОЕ"';
+                if ($model->company == '3')
+                    $model->company = '"СОЕ"';
+                if ($model->company == '4')
+                    $model->company = '"ЦЕК"';
+                if ($model->company == '5')
+                    $model->company = '"ЧОЕ"';
+                if ($model->company == '6')
+                    $model->company = '"ЧОЕ (викл.?)"';
+                $sql = $sql . " and company = " .$model->company;
+            }
+//                debug($sql);
+//        return;
+            $sql = $sql . ' ORDER BY 1';
+//            debug($model);
+//            return;
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//            debug($sql);
+//            return;
+            $dataProvider->pagination = false;
+            return $this->render('phones_sap_2', [
+                'model' => $searchModel,'dataProvider' => $dataProvider,'searchModel' => $searchModel,
+            ]);
+        } else {
+            return $this->render('phones_sap', compact('model'));
+        }
+    }
+
+
 }

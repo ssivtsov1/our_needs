@@ -71,6 +71,7 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
+        'db_mysql' => require(__DIR__ . '/db_mysql.php'),
         'formatter' => [
             'class' => 'yii\i18n\Formatter',
             'nullDisplay' => '',
