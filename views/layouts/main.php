@@ -31,7 +31,7 @@ AppAsset::register($this);
         $main = 0;
 
         NavBar::begin([
-                'brandLabel' => 'Інформація СПС',
+                'brandLabel' => 'Власні потреби',
                 'brandUrl' => Yii::$app->homeUrl,
                 'options' => [
                     //'class' => 'navbar-inverse navbar-fixed-top',
@@ -40,16 +40,24 @@ AppAsset::register($this);
                 ],
             ]);
 
-
                      echo Nav::widget([
                     'options' => ['class' => 'navbar-nav navbar-right'],
                     'items' => [
                         ['label' => Html::tag('span',' Головна',['class' => 'glyphicon glyphicon-home']) ,
                             'url' => ['/site/index']],
-                        ['label' => 'Плани', 'url' => ['/site/plan_forma']],
-                        ['label' => 'Щоденник', 'url' => ['/site/a_diary_forma']],
-                        ['label' => 'Телефони', 'url' => ['/site/phones_sap']],
-                        ['label' => 'Про сайт', 'url' => ['/site/about']],
+                        ['label' => 'Довідники', 'url' => ['/site/index'],
+                            'options' => ['id' => 'down_menu'],
+                            'items' => [
+                                ['label' => 'Норми споживання', 'url' => ['/site/norms']],
+                                ['label' => 'Підстанції', 'url' => ['/site/tp']],
+                            ]],
+                        ['label' => 'Звіти', 'url' => ['/site/index'],
+                            'options' => ['id' => 'down_menu'],
+                            'items' => [
+                                ['label' => 'Споживання', 'url' => ['/site/spending']],
+                                ['label' => 'Порівняння норм', 'url' => ['/site/compare']],
+                            ]],
+                        ['label' => 'Про програму', 'url' => ['/site/about']],
 
                     ],
                     'encodeLabels' => false,
@@ -112,7 +120,7 @@ AppAsset::register($this);
             ]) ?>
              
             <?= $content ?>
-            
+            <br>
             
             
         </div>

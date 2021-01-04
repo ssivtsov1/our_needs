@@ -1,6 +1,7 @@
 <?php
 
 namespace app\controllers;
+//namespace app\models;
 
 use app\models\A_diary;
 use app\models\A_diary_search;
@@ -19,7 +20,7 @@ use yii\data\SqlDataProvider;
 use app\models\ContactForm;
 use app\models\InputData;
 use app\models\cdata;
-use app\models\employees;
+use app\models\needs_fact;
 use app\models\shtrafbat;
 use app\models\viewphone;
 use app\models\list_workers;
@@ -106,19 +107,8 @@ class SiteController extends Controller
         if($sql=='0') {
 
             $model = new InputData();
-            $flag_fio = 0;
-            //$last = 630;
-            $last = 1630;
-            $cdata = cdata::find()->all();
-            $date_b=$cdata[0]['date_b'];
-            $date_e=$cdata[0]['date_e'];
-            $gendir=$cdata[0]['gendir_const'];
-
-            $date=date('Y-m-d');
-            if($date>=$date_b && $date<=$date_e) $gendir=$cdata[0]['gendir'];
 
             if ($model->load(Yii::$app->request->post())) {
-                //$searchModel = new employees();
                 // Создание поискового sql выражения
                 $where = '';
                     
@@ -193,20 +183,13 @@ class SiteController extends Controller
                     $where .= ' and post like ' . "'%" . $model->post . "%'";
                 }
 
-                if (!empty($model->sex)) {
-                    if($model->sex==1)
-                        $where .= ' and extract_name(fio) in (select name from man_name where sex=0)';
-                    if($model->sex==2)
-                        $where .= ' and extract_name(fio) in (select name from man_name where sex=1)';
-                }
 
                 $where = trim($where);
                 if (empty($where)) $where = '';
                 else
                     $where = ' where ' . substr($where, 4);
 
-
-                $sql = "select *,rate_person(post) as sort1,rate_group(unit_2) as sort2 from vw_phone " . $where . ' order by sort1,sort2,fio';
+                $sql = "select * from  needs_fact " . $where . ' order by nazv';
 
 //            debug($sql);
 //            return;
@@ -214,74 +197,18 @@ class SiteController extends Controller
                 $f=fopen('aaa','w+');
                 fputs($f,$sql);
 
-                $data = viewphone::findBySql($sql)->all();
-//            $dataProvider = new ActiveDataProvider([
-//                'query' => viewphone::findBySql($sql),
-//               // 'sort' => ['defaultOrder'=> ['sort'=>SORT_ASC,'unit_2'=>SORT_ASC]]
-//            ]);
+                $data = needs_fact::findBySql($sql)->all();
                 $kol = count($data);
-                $searchModel = new viewphone();
+                $searchModel = new needs_fact();
                 $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
 
-
-//            $dataProvider->sort->attributes['sort'] = [
-//            'asc' => ['sort' => SORT_ASC,'unit_2'=>SORT_ASC],
-//            'desc' => ['sort' => SORT_DESC,'unit_2' => SORT_DESC],
-//            ];
-                // Ищем похожие фамилии, если не найдена запись с введенной фамилией
-                // по алгоритму Левенштейна
-                $closest[0] = '';
-                $closest[10] = '';  // Признак о нажатии кнопки отдела
-                if($kol==0 && $flag_fio == 1) {
-                    $shortest = -1;
-                    $sql_l = "select distinct(first_word(fio)) as fio from vw_phone";
-                    $data_l = viewphone::findBySql($sql_l)->all();
-                    $j=0;
-                    foreach ($data_l as $v) {
-                        $vf = $v->fio;
-                        // вычисляем расстояние между входным словом и текущим
-                        $lev = levenshtein($model->fio, $vf);
-
-                        // проверяем полное совпадение
-                        if ($lev == 0) {
-
-                            // это ближайшее слово (точное совпадение)
-                            $closest[$j] = $vf;
-                            $shortest = 0;
-
-                            // выходим из цикла - мы нашли точное совпадение
-                            break;
-                        }
-
-                        // если это расстояние меньше следующего наименьшего расстояния
-                        // ИЛИ если следующее самое короткое слово еще не было найдено
-                        if ($lev <= $shortest || $shortest < 0) {
-                            // устанивливаем ближайшее совпадение и кратчайшее расстояние
-                            if($lev<3){
-                                $closest[$j]  = $vf;
-                                $shortest = $lev;
-                                $j++;
-                            }
-                        }
-                        
-                    }
-                    
-                    }
-                    
-                 
-                
-                $session = Yii::$app->session;
-                $session->open();
-                $session->set('view', 1);
-                //'data' => $data
-
-                return $this->render('viewphone', [
+                return $this->render('needs_fact', [
                     'dataProvider' => $dataProvider,
-                    'searchModel' => $searchModel, 'kol' => $kol,'sql' => $sql,'closest' => $closest]);
+                    'searchModel' => $searchModel, 'kol' => $kol,'sql' => $sql]);
             } else {
 
                 return $this->render('inputdata', [
-                    'model' => $model,'gendir' => $gendir
+                    'model' => $model
                 ]);
             }
             }
@@ -302,7 +229,6 @@ class SiteController extends Controller
                 'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
         }
     }
-
 
 
 // Добавление новых пользователей
@@ -393,8 +319,8 @@ where 1=1";
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 //        debug('1111111111111');
             $sql = "SELECT projects, plan_status, year, month, txt, speed
-FROM vw_plans 
-where 1=1";
+            FROM vw_plans 
+            where 1=1";
 
             if (!empty($model->projects)) {
                 $sql = $sql . ' and id_project =' . "'" . $model->projects . "'";
@@ -508,5 +434,19 @@ where 1=1";
         }
     }
 
+    //    Страница о программе
+    public function actionAbout()
+    {
+        $model = new info();
+        $model->title = 'Про програму';
+        $model->info1 = "Ця програма здійснює введення данних по фактичному споживанню электоенергії
+         на підстанціях для власних потреб, а також формування звітів для порівняння споживання з нормативним споживанням.";
+        $model->style1 = "d15";
+        $model->style2 = "info-text";
+        $model->style_title = "d9";
+
+        return $this->render('about', [
+            'model' => $model]);
+    }
 
 }

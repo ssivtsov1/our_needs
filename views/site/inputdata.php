@@ -5,7 +5,11 @@ use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
-$this->title = 'Телефонний довідник (ЦЄК)';
+$this->title = 'Власні потреби';
+$arr = ['- Виберіть рік *-', '2020', '2019'];
+$arr1 = ['- Виберіть РЕМ *-', 'Дніпропетровські РЕМ', 'Вільногірські РЕМ', 'Павлоградські РЕМ', 'Гвардійська дільниця', 'Жовтоводські РЕМ', 'Криворізькі РЕМ','Апостолівська дільниця', 'Інгулецька дільниця'];
+$arr2 = ['- Виберіть рівень напруги кВ *-', '6 і 10', '35', '150', '35 і 150'];
+
 ?>
 
 <script>
@@ -27,16 +31,19 @@ $this->title = 'Телефонний довідник (ЦЄК)';
          
           <?php //debug(Yii::$app->user->identity); ?> 
           
-        <div <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'class="col-lg-8"'; else echo 'class="col-lg-6 tel_left_side"'; ?>>
+        <div <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'class="col-lg-8"'; else echo 'class="col-lg-04 tel_left_side"'; ?>>
             <?php $form = ActiveForm::begin(['id' => 'inputdata',
                 'options' => [
                     'class' => 'form-horizontal col-lg-25',
                     'enctype' => 'multipart/form-data'
                     
                 ]]); ?>
+            <?= $form->field($model, 'year')-> textInput() -> dropDownList ( $arr )?>
+            <?= $form->field($model, 'voltage')-> textInput() -> dropDownList ( $arr2 )?>
+            <?= $form->field($model, 'rem')-> textInput() -> dropDownList ( $arr1 )?>
 
-<!--            a.main_unit<>'Павлоградські РЕМ' and-->
-
+            <?= Html::submitButton('OK',['class' => 'btn btn-success']) ?>
+            <br>
 
             <?php ActiveForm::end(); ?>
         </div>

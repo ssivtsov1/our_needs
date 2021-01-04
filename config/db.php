@@ -3,9 +3,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=phone_new',
-    'username' => 'phone_new',
-    'password' => 'Fylhjvtlf',
+    'dsn' => 'pgsql:host=192.168.15.15;port=5432;dbname=energo_dnres',
+    'username' => 'local',
+    'password' => '',
     'charset' => 'utf8',
 ];
 

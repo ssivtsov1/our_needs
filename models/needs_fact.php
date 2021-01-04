@@ -9,35 +9,32 @@ use yii\base\Model;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 
-class Employees extends \yii\db\ActiveRecord
+class needs_fact extends \yii\db\ActiveRecord
 {
 
     public static function tableName()
     {
-        return 'vw_phone'; //Это вид
+        return 'needs_fact'; //Это вид
     }
 
     public function attributeLabels()
     {
         return [
             'id' => 'ID',
-            'tab_nom' => 'Таб. №',
-            'fio' => 'П.І.Б.',
-            'post' => 'Посада',
-            'main_unit' => 'Гол. підрозділ',
-            'unit_1' => 'Підпор. підрозділ',
-            'unit_2' => 'Група',
-            'tel_mob' => 'Моб. тел.',
-            'email' => 'Особова пошта',
-            'email_group' => 'Пошта відділу',
-            'rate' => 'Тарифний план',
-            'tel' => 'Внутр. тел.',
-            'tel_town' => 'Міський тел.',
-            'line' => 'Лінія',
             'nazv' => 'Назва',
-            'type_tel' => 'Тип моб. телефону',
-            'phone_type' => 'Тип телефону',
-            
+            'month_1' => 'січень',
+            'month_2' => 'лютий',
+            'month_3' => 'березень',
+            'month_4' => 'квітень',
+            'month_5' => 'травень',
+            'month_6' => 'червень',
+            'month_7' => 'липень',
+            'month_8' => 'серпень',
+            'month_9' => 'вересень',
+            'month_10' => 'жовтень',
+            'month_11' => 'листопад',
+            'month_12' => 'грудень',
+            'voltage' => 'Рівень напруги',
         ];
     }
 
@@ -45,16 +42,16 @@ class Employees extends \yii\db\ActiveRecord
     {
         return [
 
-            [['id','tab_nom','fio','post','main_unit','unit_1','unit_2','tel_mob','remark',
-                'email','rate','tel_town','tel','line','nazv','type_tel',
-                'phone_type','email_group'],'safe']
+            [['id','month_1','month_2','month_3','month_4','month_5','month_6','month_7','month_8',
+                'month_9','month_10','month_11','month_12','voltage','nazv'
+              ],'safe']
             ];
     }
 
     public function search($params)
     {
         
-        $query = employees::find();
+        $query = needs_fact::find();
 //        $tel_mob = trim($this->tel_mob); 
 //        if(substr($tel_mob,0,1)=='0') $tel_mob = substr($tel_mob,1);
 //        $tel_mob = only_digit($tel_mob);
@@ -62,7 +59,7 @@ class Employees extends \yii\db\ActiveRecord
         
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
-            'sort' => ['defaultOrder'=> ['fio'=>SORT_ASC]]
+
         ]);
 
         if (!($this->load($params) && $this->validate())) {
