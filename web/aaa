@@ -1,1 +1,33 @@
-select * from  needs_fact  order by nazv
+select a.*,
+    (a.month_1+a.month_2+a.month_3+a.month_4+
+    a.month_5+a.month_6+a.month_7+a.month_8+
+    a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    b.mon_1-a.month_1 as delta_1,
+    b.mon_2-a.month_2 as delta_2,
+    b.mon_3-a.month_3 as delta_3,
+    b.mon_4-a.month_4 as delta_4,
+    b.mon_5-a.month_5 as delta_5,
+    b.mon_6-a.month_6 as delta_6,
+    b.mon_7-a.month_7 as delta_7,
+    b.mon_8-a.month_8 as delta_8,
+    b.mon_9-a.month_9 as delta_9,
+    b.mon_10-a.month_10 as delta_10,
+    b.mon_11-a.month_11 as delta_11,
+    b.mon_12-a.month_12 as delta_12,
+    (b.mon_1-a.month_1)+
+    (b.mon_2-a.month_2)+
+    (b.mon_3-a.month_3)+
+    (b.mon_4-a.month_4)+
+    (b.mon_5-a.month_5)+
+    (b.mon_6-a.month_6)+
+    (b.mon_7-a.month_7)+
+    (b.mon_8-a.month_8)+
+    (b.mon_9-a.month_9)+
+    (b.mon_10-a.month_10)+
+    (b.mon_11-a.month_11)+
+    (b.mon_12-a.month_12) as all_delta,
+                            c.rem as res
+                            from needs_fact a
+                            join needs_norm b on a.nazv=b.nazv and a.rem=b.rem 
+                            and a.year=2020 and b.year=2020 
+                            left join kod_rem c on a.rem=c.kod_rem order by a.voltage desc,a.rem asc

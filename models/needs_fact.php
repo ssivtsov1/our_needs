@@ -11,6 +11,21 @@ use yii\data\ActiveDataProvider;
 
 class needs_fact extends \yii\db\ActiveRecord
 {
+    public $delta_1;
+    public $delta_2;
+    public $delta_3;
+    public $delta_4;
+    public $delta_5;
+    public $delta_6;
+    public $delta_7;
+    public $delta_8;
+    public $delta_9;
+    public $delta_10;
+    public $delta_11;
+    public $delta_12;
+    public $res;
+    public $all_month;
+    public $all_delta;
 
     public static function tableName()
     {
@@ -34,7 +49,22 @@ class needs_fact extends \yii\db\ActiveRecord
             'month_10' => 'жовтень',
             'month_11' => 'листопад',
             'month_12' => 'грудень',
+            'all_month' => 'Усього',
             'voltage' => 'Рівень напруги',
+            'res' => 'РЕМ',
+            'delta_1' => '^1',
+            'delta_2' => '^2',
+            'delta_3' => '^3',
+            'delta_4' => '^4',
+            'delta_5' => '^5',
+            'delta_6' => '^6',
+            'delta_7' => '^7',
+            'delta_8' => '^8',
+            'delta_9' => '^9',
+            'delta_10' => '^10',
+            'delta_11' => '^11',
+            'delta_12' => '^12',
+            'all_delta' => '^',
         ];
     }
 
@@ -43,20 +73,15 @@ class needs_fact extends \yii\db\ActiveRecord
         return [
 
             [['id','month_1','month_2','month_3','month_4','month_5','month_6','month_7','month_8',
-                'month_9','month_10','month_11','month_12','voltage','nazv'
+                'month_9','month_10','month_11','month_12','voltage','nazv','delta_1','delta_2','res'
               ],'safe']
             ];
     }
 
-    public function search($params)
+    public function search($params,$sql)
     {
-        
-        $query = needs_fact::find();
-//        $tel_mob = trim($this->tel_mob); 
-//        if(substr($tel_mob,0,1)=='0') $tel_mob = substr($tel_mob,1);
-//        $tel_mob = only_digit($tel_mob);
-       
-        
+        $query = needs_fact::findBySql($sql);
+
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
 
@@ -65,23 +90,6 @@ class needs_fact extends \yii\db\ActiveRecord
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;
         }
-        $tel = trim($this->tel_mob);
-        $query->andFilterWhere(['=', 'tab_nom', $this->tab_nom]);
-        $query->andFilterWhere(['like', 'fio', $this->fio]);
-        $query->andFilterWhere(['like', 'post', $this->post]);
-        if(substr($tel,0,1)=='0' &&  strlen($tel)>1){
-            $fnd = '%'.substr($tel,1).'%';
-            $query->andFilterWhere(['like', 'tel_mob', $fnd, false]);}
-        else
-            $query->andFilterWhere(['like', 'tel_mob', only_digit($this->tel_mob)]);
-
-        $query->andFilterWhere(['like', 'tel', $this->tel]);
-        $query->andFilterWhere(['like', 'tel_town', only_digit($this->tel_town)]);
-        $query->andFilterWhere(['like', 'main_unit', $this->main_unit]);
-        $query->andFilterWhere(['like', 'unit_1', $this->unit_1]);
-        $query->andFilterWhere(['like', 'unit_2', $this->unit_2]);
-        $query->andFilterWhere(['like', 'email', $this->email]);
-        $query->andFilterWhere(['like', 'email_group', $this->email_group]);
 
         return $dataProvider;
     }
