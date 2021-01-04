@@ -48,7 +48,7 @@ AppAsset::register($this);
                         ['label' => 'Довідники', 'url' => ['/site/index'],
                             'options' => ['id' => 'down_menu'],
                             'items' => [
-                                ['label' => 'Норми споживання', 'url' => ['/site/norms']],
+                                ['label' => 'Норми споживання', 'url' => ['/site/norms_forms']],
                                 ['label' => 'Підстанції', 'url' => ['/site/tp']],
                             ]],
                         ['label' => 'Звіти', 'url' => ['/site/index'],

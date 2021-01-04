@@ -5,6 +5,7 @@ namespace app\controllers;
 
 use app\models\A_diary;
 use app\models\A_diary_search;
+use app\models\Norms_search;
 use app\models\phones_sap;
 use app\models\phones_sap_search;
 use app\models\Plan;
@@ -36,6 +37,7 @@ use app\models\loginform;
 use kartik\mpdf\Pdf;
 //use mpdf\mpdf;
 use yii\web\UploadedFile;
+use app\models\Norms;
 
 class SiteController extends Controller
 {  /**
@@ -227,6 +229,40 @@ class SiteController extends Controller
 
             return $this->render('viewphone', ['data' => $data,
                 'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
+        }
+    }
+
+    public function actionNorms_forms()
+    {
+        $model = new Norms();
+        $searchModel = new Norms_search();
+
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+//        debug('1111111111111');
+            $sql = "SELECT  nazv,c.rem,voltage,mon_1,mon_2,mon_3,mon_4,mon_5,mon_6,mon_7,mon_8,mon_9,mon_10,mon_11,mon_12,year 
+FROM needs_norm 
+left join kod_rem c on needs_norm.rem=c.kod_rem
+where 1=1";
+                if (!empty($model->year)) {
+                    if ($model->year == '1')
+                        $model->year = '2020';
+                    if ($model->year == '2')
+                        $model->year = '2019';
+                    $sql = $sql . ' and year = ' . $model->year ;
+            }
+                $sql=$sql. 'ORDER BY needs_norm.voltage desc,needs_norm.rem asc,needs_norm.nazv,needs_norm.year desc';
+//                        debug($sql);
+//        return;
+
+                    $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//            debug($sql);
+//            return;
+                    $dataProvider->pagination = false;
+                    return $this->render('norms', [
+                        'model' => $searchModel, 'dataProvider' => $dataProvider, 'searchModel' => $searchModel,
+                    ]);
+        } else {
+            return $this->render('norms_forms', compact('model'));
         }
     }
 
