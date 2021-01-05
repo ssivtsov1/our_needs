@@ -9,7 +9,7 @@ use yii\base\Model;
 use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 
-class needs_fact extends \yii\db\ActiveRecord
+class vneeds_fact extends \yii\db\ActiveRecord
 {
     public $delta_1;
     public $delta_2;
@@ -23,13 +23,12 @@ class needs_fact extends \yii\db\ActiveRecord
     public $delta_10;
     public $delta_11;
     public $delta_12;
-    public $res;
     public $all_month;
     public $all_delta;
 
     public static function tableName()
     {
-        return 'needs_fact';
+        return 'vneeds_fact'; //Это вид
     }
 
     public function attributeLabels()
@@ -80,7 +79,7 @@ class needs_fact extends \yii\db\ActiveRecord
 
     public function search($params,$sql)
     {
-        $query = needs_fact::findBySql($sql);
+        $query = vneeds_fact::findBySql($sql);
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

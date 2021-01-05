@@ -13,6 +13,7 @@ class InputData extends Model
     public $voltage;     // Уровень напряжения
     public $rem;           // РЭС
     private $_user;
+    public $up;
 
     public function attributeLabels()
     {
@@ -20,6 +21,7 @@ class InputData extends Model
             'year' => 'Рік:',
             'voltage' => 'Рівень напруги:',
             'rem' => 'РЕМ:',
+            'up' => 'Превышение потребления:',
         ];
     }
 
@@ -29,6 +31,7 @@ class InputData extends Model
             ['year', 'safe'],
             ['voltage', 'safe'],
             ['rem', 'safe'],
+            ['up', 'safe'],
         ];
     }
 }

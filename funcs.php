@@ -416,4 +416,44 @@ $s1.=$nc;
 }
 return $s1;
     }
+
+function apply_rem($res) {
+    $where='';
+    switch ($res){
+        case 1:
+            $where = ' and a.rem=' . "'" . '-' ."'" ;
+            break;
+        case 2:
+            $where = ' and a.rem=' . "'" . '01' ."'" ;
+            break;
+        case 3:
+            $where = ' and a.rem=' . "'" . '03' ."'" ;
+            break;
+        case 4:
+            $where= ' and a.rem=' . "'" . '04' ."'" ;
+            break;
+        case 5:
+            $where = ' and a.rem=' . "'" . '07' ."'" ;
+            break;
+        case 6:
+            $where= ' and a.rem=' . "'" . '02' ."'" ;
+            break;
+        case 7:
+            $where= ' and a.rem=' . "'" . '05' ."'" ;
+            break;
+        case 8:
+            $where = ' and a.rem=' . "'" . '06' ."'" ;
+            break;
+        case 9:
+            $where = ' and a.rem=' . "'" . '08' ."'" ;
+            break;
+        case 10:
+            $where = ' and a.rem=' . "'" . '09' ."'" ;
+            break;
+        default:
+            $where = ' and 1=1';
+    }
+    return $where;
+
+}
 ?>

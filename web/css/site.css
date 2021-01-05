@@ -349,6 +349,7 @@ a.desc:after {
 .text-proc{color:#A66200;}
 .text-opl {color:blue;}
 .text-bad {color:#768687;}
+.text-red{color:red;}
 
 .control-label[for=viewschet-date_z],
 .control-label[for=viewschet-adres],

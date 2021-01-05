@@ -22,6 +22,7 @@ use app\models\ContactForm;
 use app\models\InputData;
 use app\models\cdata;
 use app\models\needs_fact;
+use app\models\vneeds_fact;
 use app\models\shtrafbat;
 use app\models\viewphone;
 use app\models\list_workers;
@@ -110,124 +111,150 @@ class SiteController extends Controller
 
             $model = new InputData();
 
+
+            $const_year=date('Y');  //  константа - нужно поменять если будут добавляться года в список
             if ($model->load(Yii::$app->request->post())) {
                 // Создание поискового sql выражения
                 $where = '';
-                    
-                if (!empty($model->main_unit)) {
-                    if ($model->main_unit == $last) {
-                        $where .= ' ';
-                    } else {
-                        $data = employees::find()->select(['main_unit'])
-                            ->where('id_name=:id_name', [':id_name' => $model->main_unit])->all();
-                        $main_unit = $data[0]->main_unit;
-                        $where .= ' and main_unit=' . "'" . $main_unit . "'";
-                    }
+                if (!empty($model->up)) {
+                    $where .= ' and (delta_1>0 or delta_2>0 or delta_3>0  or delta_4>0  or delta_5>0
+                     or delta_6>0  or delta_7>0  or delta_8>0  or delta_9>0  or delta_10>0
+                      or delta_11>0  or delta_12>0)'   ;
                 }
-                if (!empty($model->unit_1)) {
+                if (!empty($model->year)) {
+                    $year=$const_year-$model->year;
+                }
+                else
+                    $year=$const_year-1;
 
-//                    debug($model->unit_1);
-//                    return;
-
-                    if ($model->unit_1 == $last) $where .= ' ';
-                    else { 
-                        $data = employees::find()->select(['unit_1'])
-                            ->where('id=:id', [':id' => $model->unit_1])->all();
-                        
-                        
-                        
-                        $unit_1 = $data[0]->unit_1;
-                        if ($unit_1 != 'Відділ по роботі з юридичними споживачами електроенергії')
-                            $where .= ' and unit_1=' . "'" . $unit_1 . "'";
-                        else
-                            $where .= ' and unit_1=' . "'" . $unit_1 . "'" . ' or tab_nom=1538';
-                    }
-
-                }
-                if (!empty($model->unit_2)) {
-                    if ($model->unit_2 == $last) $where .= ' ';
-                    else {
-                        $data = employees::find()->select(['unit_2'])
-                            ->where('id=:id', [':id' => $model->unit_2])->all();
-                        $unit_2 = $data[0]->unit_2;
-                        $where .= ' and unit_2=' . "'" . $unit_2 . "'";
-                    }
-                }
-                if (!empty($model->fio)) {
-                    $flag_fio = 1;
-                    $where .= ' and (fio like ' . '"%' . $model->fio . '%"' .' or fio_ru like ' . '"%' . $model->fio . '%")';
-                }
-                if (!empty($model->tel_mob)) {
-                    $tel_mob = trim($model->tel_mob);
-                    if (substr($tel_mob, 0, 1) == '0') $tel_mob = substr($tel_mob, 1);
-                    $tel_mob = only_digit($tel_mob);
-                    $where .= ' and tel_mob like ' . "'%" . $tel_mob . "%'";
-                }
-                if (!empty($model->tel_town)) {
-                    $tel_town = trim($model->tel_town);
-                    $tel_town = only_digit($tel_town);
-                    $where .= ' and tel_town like ' . "'%" . $tel_town . "%'";
-                }
-                if (!empty($model->tel)) {
-                    switch($model->tel){
-                        case '*':
-                            $where .= ' and tel is not null';
+                if (!empty($model->rem)) {
+                    switch ($model->rem){
+                        case 1:
+                            $where .= ' and rem=' . "'" . '-' ."'" ;
                             break;
-                        case '?':
-                            $where .= ' and tel is null';
+                        case 2:
+                            $where .= ' and rem=' . "'" . '01' ."'" ;
                             break;
-                        default:
-                            $where .= ' and tel like ' . "'%" . $model->tel . "%'";
+                        case 3:
+                            $where .= ' and rem=' . "'" . '03' ."'" ;
+                            break;
+                        case 4:
+                            $where .= ' and rem=' . "'" . '04' ."'" ;
+                            break;
+                        case 5:
+                            $where .= ' and rem=' . "'" . '07' ."'" ;
+                            break;
+                        case 6:
+                            $where .= ' and rem=' . "'" . '02' ."'" ;
+                            break;
+                        case 7:
+                            $where .= ' and rem=' . "'" . '05' ."'" ;
+                            break;
+                        case 8:
+                            $where .= ' and rem=' . "'" . '06' ."'" ;
+                            break;
+                        case 9:
+                            $where .= ' and rem=' . "'" . '08' ."'" ;
+                            break;
+                        case 10:
+                            $where .= ' and rem=' . "'" . '09' ."'" ;
                             break;
                     }
-                }
-                if (!empty($model->post)) {
-                    $where .= ' and post like ' . "'%" . $model->post . "%'";
-                }
 
-
+                }
                 $where = trim($where);
                 if (empty($where)) $where = '';
-                else
-                    $where = ' where ' . substr($where, 4);
+                else {
+                    $where = ' where ' . substr($where, 4) . ' or id=500 ' ;
+                }
 
-                $sql = "select a.*,
+                $sql = "select * from (
+    select a.*,
     (a.month_1+a.month_2+a.month_3+a.month_4+
     a.month_5+a.month_6+a.month_7+a.month_8+
     a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
-    b.mon_1-a.month_1 as delta_1,
-    b.mon_2-a.month_2 as delta_2,
-    b.mon_3-a.month_3 as delta_3,
-    b.mon_4-a.month_4 as delta_4,
-    b.mon_5-a.month_5 as delta_5,
-    b.mon_6-a.month_6 as delta_6,
-    b.mon_7-a.month_7 as delta_7,
-    b.mon_8-a.month_8 as delta_8,
-    b.mon_9-a.month_9 as delta_9,
-    b.mon_10-a.month_10 as delta_10,
-    b.mon_11-a.month_11 as delta_11,
-    b.mon_12-a.month_12 as delta_12,
-    (b.mon_1-a.month_1)+
-    (b.mon_2-a.month_2)+
-    (b.mon_3-a.month_3)+
-    (b.mon_4-a.month_4)+
-    (b.mon_5-a.month_5)+
-    (b.mon_6-a.month_6)+
-    (b.mon_7-a.month_7)+
-    (b.mon_8-a.month_8)+
-    (b.mon_9-a.month_9)+
-    (b.mon_10-a.month_10)+
-    (b.mon_11-a.month_11)+
-    (b.mon_12-a.month_12) as all_delta,
+    a. month_1-b.mon_1 as delta_1,
+    a. month_2-b.mon_2 as delta_2,
+    a. month_3-b.mon_3 as delta_3,
+    a. month_4-b.mon_4 as delta_4,
+    a. month_5-b.mon_5 as delta_5,
+    a. month_6-b.mon_6 as delta_6,
+    a. month_7-b.mon_7 as delta_7,
+    a. month_8-b.mon_8 as delta_8,
+    a. month_9-b.mon_9 as delta_9,
+    a. month_10-b.mon_10 as delta_10,
+    a. month_11-b.mon_11 as delta_11,
+    a. month_12-b.mon_12 as delta_12,
+    (a. month_1-b.mon_1)+
+    (a. month_2-b.mon_2)+
+    (a. month_3-b.mon_3)+
+    (a. month_4-b.mon_4)+
+    (a. month_5-b.mon_5)+
+    (a. month_6-b.mon_6)+
+    (a. month_7-b.mon_7)+
+    (a. month_8-b.mon_8)+
+    (a. month_9-b.mon_9)+
+    (a. month_10-b.mon_10)+
+    (a. month_11-b.mon_11)+
+    (a. month_12-b.mon_12) as all_delta,
                             c.rem as res
                             from needs_fact a
                             join needs_norm b on a.nazv=b.nazv and a.rem=b.rem 
-                            and a.year=2020 and b.year=2020 
-                            left join kod_rem c on a.rem=c.kod_rem"
-                            . $where . ' order by a.voltage desc,a.rem asc';
+                            and a.year=$year and b.year=$year 
+                            left join kod_rem c on a.rem=c.kod_rem
+                           union all
+    select 500 as id,'Усього:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    0 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on a.nazv=b.nazv and a.rem=b.rem ".apply_rem($model->rem).
+                    " and a.year=$year and b.year=$year 
+    ) s"
+    . $where . ' order by voltage desc,rem asc';
 
-//            debug($sql);
-//            return;
+//          debug($sql);
+//          return;
 
                 $f=fopen('aaa','w+');
                 fputs($f,$sql);
@@ -249,21 +276,70 @@ class SiteController extends Controller
                 ]);
             }
             }
-                
+
             
         else{
              // Если передается параметр $sql
-            $data = viewphone::findBySql($sql)->all();
-            $searchModel = new viewphone();
+            $data = needs_fact::findBySql($sql)->all();
+            $searchModel = new needs_fact();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+            $dataProvider->pagination = false;
             $kol = count($data);
 
             $session = Yii::$app->session;
             $session->open();
             $session->set('view', 1);
 
-            return $this->render('viewphone', ['data' => $data,
+            return $this->render('needs_fact', ['data' => $data,
                 'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
+        }
+    }
+
+    //    ~ Обновление записи
+    public function actionUpdate_fact($id,$mod,$sql,$res='')
+    {
+        // $id  id записи
+        // $mod - название модели
+        if($mod=='norm_facts')
+            $model = vneeds_fact::find()
+                ->where('id=:id', [':id' => $id])->one();
+
+
+        $session = Yii::$app->session;
+        $session->open();
+        if($session->has('user'))
+            $user = $session->get('user');
+        else
+            $user = '';
+
+        if ($model->load(Yii::$app->request->post()))
+        {
+            // Обновление фактических показателей
+            $z = "UPDATE needs_fact 
+                  SET "."month_1"."=".$model->month_1.
+                ',month_2='.$model->month_2.
+                ',month_3='.$model->month_3.
+                ',month_4='.$model->month_4.
+                ',month_5='.$model->month_5.
+                ',month_6='.$model->month_6.
+                ',month_7='.$model->month_7.
+                ',month_8='.$model->month_8.
+                ',month_9='.$model->month_9.
+                ',month_10='.$model->month_10.
+                ',month_11='.$model->month_11.
+                ',month_12='.$model->month_12.
+                " WHERE id = ".$model->id;
+
+            Yii::$app->db->createCommand($z)->execute();
+
+            if($mod=='norm_facts')
+                $this->redirect(['site/more','sql' => $sql]);
+
+        } else {
+            if($mod=='norm_facts')
+                return $this->render('update_fact', [
+                    'model' => $model
+                ]);
         }
     }
 

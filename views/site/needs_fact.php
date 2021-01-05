@@ -1,3 +1,69 @@
+<script>
+    window.addEventListener('load', function () {
+        var tableOffset = $(".table").offset().top;
+        var $header = $(".table > thead").clone();
+        var $body = $(".table > tbody").clone();
+        var $fixedHeader = $("#header-fixed").append($header);
+        $("#header-fixed").width($(".table").width());
+
+        $(window).bind("scroll", function() {
+            var offset = $(this).scrollTop();
+
+            if (offset >= tableOffset && $fixedHeader.is(":hidden")) {
+                $fixedHeader.show();
+            }
+            else if (offset < tableOffset) {
+                $fixedHeader.hide();
+            }
+
+            $("#header-fixed th").each(function(index){
+                var index2 = index;
+                $(this).width(function(index2){
+                    return $(".table th").eq(index).width();
+                });
+            });
+        });
+
+        // alert(111);
+        $(window).scroll(function () {
+            if(kol<1300) {
+                // горизонтальный scroll
+                if (window.scrollX > 1)
+                    $fixedHeader.hide();
+                if (window.scrollX > 270) //270 is the amount of scroll after which the cols should stick
+                {
+                    left = $(window).scrollLeft() - 15; //15 is the margin from left of fixed columns
+
+                    if(kol>800) {
+                        no_columns_to_stick = 4  //stick first 8 columns
+                    }
+                    else{
+                        no_columns_to_stick = 8
+                    }
+
+                    $('table td:nth-child(-n+' + no_columns_to_stick + ')').each(function () {
+                        $(this).addClass('stick-relative');
+                        $(this).css('left', left);
+                    });
+                    $('table th:nth-child(-n+' + no_columns_to_stick + ')').each(function () {
+                        $(this).addClass('stick-relative');
+                        $(this).css('left', left);
+                    });
+                }
+                else {
+                    $('table td:nth-child(-n+' + no_columns_to_stick + ')').each(function () {
+                        $(this).removeClass('stick-relative');
+                    });
+                    $('table th:nth-child(-n+' + no_columns_to_stick + ')').each(function () {
+                        $(this).removeClass('stick-relative');
+                    });
+                }
+            }
+        });
+    });
+</script>
+
+
 <?php
 
 use yii\helpers\Html;
@@ -21,6 +87,22 @@ $this->title = 'Фактичні показники в тисячах кВт.';
         'emptyText' => 'Нічого не знайдено',
         'columns' => [
             ['class' => 'yii\grid\SerialColumn'],
+            [
+                /**
+                 * Указываем класс колонки
+                 */
+                'class' => \yii\grid\ActionColumn::class,
+            'buttons'=>[
+
+                'update'=>function ($url, $model) use ($sql) {
+                    $customurl=Yii::$app->getUrlManager()->
+                    createUrl(['/site/update_fact','id'=>$model['id'],'mod'=>'norm_facts','sql'=>$sql]);
+                    return \yii\helpers\Html::a( '<span class="glyphicon glyphicon-pencil"></span>', $customurl,
+                        ['title' => Yii::t('yii', 'Редагувати'), 'data-pjax' => '0']);
+                }
+            ],
+                'template' => '{update}',
+            ],
 
             ['attribute' =>'nazv',
                 'value' => function ($model) {
@@ -28,7 +110,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                     if ( $model->delta_1>0 || $model->delta_2>0 || $model->delta_3>0 || $model->delta_4>0
                         || $model->delta_5>0 || $model->delta_6>0 || $model->delta_7>0 || $model->delta_8>0
                         || $model->delta_9>0 || $model->delta_10>0 || $model->delta_11>0 || $model->delta_12>0)
-                        return "<span class='text-info'> $model->nazv </span>";
+                        return "<span class='text-red'> $model->nazv </span>";
                     else
                         return $model->nazv;
                 },
@@ -36,12 +118,24 @@ $this->title = 'Фактичні показники в тисячах кВт.';
 
             ],
             'res',
+            'all_month',
+            ['attribute' =>'all_delta',
+                'value' => function ($model) {
+                    $q = $model->all_delta;
+                    if ($q>0)
+                        return "<span class='text-red'> $model->all_delta </span>";
+                    else
+                        return $model->all_delta;
+                },
+                'format' => 'raw'
+
+            ],
             'month_1',
             ['attribute' =>'delta_1',
                 'value' => function ($model) {
                     $q = $model->delta_1;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_1 </span>";
+                        return "<span class='text-red'> $model->delta_1 </span>";
                     else
                         return $model->delta_1;
                 },
@@ -53,7 +147,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_2;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_2 </span>";
+                        return "<span class='text-red'> $model->delta_2 </span>";
                     else
                         return $model->delta_2;
                 },
@@ -64,7 +158,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_3;
                     if ($q>0)
-                         return "<span class='text-info'> $model->delta_3 </span>";
+                         return "<span class='text-red'> $model->delta_3 </span>";
                     else
                         return $model->delta_3;
                 },
@@ -76,7 +170,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_4;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_4 </span>";
+                        return "<span class='text-red'> $model->delta_4 </span>";
                     else
                         return $model->delta_4;
                 },
@@ -88,7 +182,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_5;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_5 </span>";
+                        return "<span class='text-red'> $model->delta_5 </span>";
                     else
                         return $model->delta_5;
                 },
@@ -100,7 +194,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_6;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_6 </span>";
+                        return "<span class='text-red'> $model->delta_6 </span>";
                     else
                         return $model->delta_6;
                 },
@@ -111,7 +205,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_7;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_7 </span>";
+                        return "<span class='text-red'> $model->delta_7 </span>";
                     else
                         return $model->delta_7;
                 },
@@ -123,7 +217,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_8;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_8 </span>";
+                        return "<span class='text-red'> $model->delta_8 </span>";
                     else
                         return $model->delta_8;
                 },
@@ -135,7 +229,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_9;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_9 </span>";
+                        return "<span class='text-red'> $model->delta_9 </span>";
                     else
                         return $model->delta_9;
                 },
@@ -147,7 +241,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_10;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_10 </span>";
+                        return "<span class='text-red'> $model->delta_10 </span>";
                     else
                         return $model->delta_10;
                 },
@@ -159,7 +253,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_11;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_11 </span>";
+                        return "<span class='text-red'> $model->delta_11 </span>";
                     else
                         return $model->delta_11;
                 },
@@ -171,25 +265,14 @@ $this->title = 'Фактичні показники в тисячах кВт.';
                 'value' => function ($model) {
                     $q = $model->delta_12;
                     if ($q>0)
-                        return "<span class='text-info'> $model->delta_12 </span>";
+                        return "<span class='text-red'> $model->delta_12 </span>";
                     else
                         return $model->delta_12;
                 },
                 'format' => 'raw'
 
             ],
-            'all_month',
-            ['attribute' =>'all_delta',
-                'value' => function ($model) {
-                    $q = $model->all_delta;
-                    if ($q>0)
-                        return "<span class='text-info'> $model->all_delta </span>";
-                    else
-                        return $model->all_delta;
-                },
-                'format' => 'raw'
 
-            ],
             'voltage',
 //             [
 //                /**
@@ -218,7 +301,7 @@ $this->title = 'Фактичні показники в тисячах кВт.';
 //            ],
         ],
     ]); }?>
-
+    <table id="header-fixed"></table>
 </div>
 
 
