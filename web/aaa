@@ -1,4 +1,5 @@
-select * from (
+select id,nazv,res,all_month,all_delta,month_1,delta_1,month_2,delta_2,month_3,delta_3,month_4,delta_4,month_5,delta_5,month_6,delta_6,month_7,delta_7,month_8,delta_8,
+            month_9,delta_9,month_10,delta_10,month_11,delta_11,month_12,delta_12,voltage,year from (
     select a.*,
     (a.month_1+a.month_2+a.month_3+a.month_4+
     a.month_5+a.month_6+a.month_7+a.month_8+
@@ -79,6 +80,4 @@ select * from (
     '' as res
     from needs_fact a
     join needs_norm b on a.nazv=b.nazv and a.rem=b.rem  and 1=1 and a.year=2020 and b.year=2020 
-    ) s where (delta_1>0 or delta_2>0 or delta_3>0  or delta_4>0  or delta_5>0
-                     or delta_6>0  or delta_7>0  or delta_8>0  or delta_9>0  or delta_10>0
-                      or delta_11>0  or delta_12>0) or id=500  order by voltage desc,rem asc
+    ) s order by voltage desc,rem asc
