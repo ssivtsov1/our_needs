@@ -7,11 +7,24 @@ use yii\grid\ActionColumn;
 use yii\grid\CheckboxColumn;
 use yii\grid\SerialColumn;
 
-$this->params['breadcrumbs'][] = $this->title;
+$this->params['breadcrumbs'][] = 'Довідник норм';
 ?>
 <div class="site-spr1">
 
+    <?php echo Html::a('Експорт в Excel', ['site/norms2excel'
+    ],
+        ['class' => 'btn btn-info excel_btn',
+            'data' => [
+                'method' => 'post',
+                'params' => [
+
+                    'data' => $sql
+
+                ],
+            ]]); ?>
+
     <h3><?= Html::encode($this->title) ?></h3>
+
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
