@@ -76,6 +76,19 @@ use yii\grid\SerialColumn;
 $this->title = 'Фактичні показники в тисячах кВт.';
 //$this->params['breadcrumbs'][] = $this->title;
 ?>
+
+<?php echo Html::a('Експорт в Excel', ['site/facts2excel'
+],
+    ['class' => 'btn btn-info excel_btn',
+        'data' => [
+            'method' => 'post',
+            'params' => [
+
+                'data' => $sql
+
+            ],
+        ]]); ?>
+
 <!--<?//= Html::a('Добавити', ['createtransp'], ['class' => 'btn btn-success']) ?>-->
 <div class="site-spr">
     <h4><?= Html::encode($this->title) ?></h4>

@@ -353,7 +353,7 @@ class SiteController extends Controller
             $sql = "SELECT  nazv,c.rem,voltage,mon_1,mon_2,mon_3,mon_4,mon_5,mon_6,mon_7,mon_8,mon_9,mon_10,mon_11,mon_12,year 
 FROM needs_norm 
 left join kod_rem c on needs_norm.rem=c.kod_rem
-where 1=1";
+ where 1=1 ";
                 if (!empty($model->year)) {
                     if ($model->year == '1')
                         $model->year = '2020';
@@ -361,7 +361,7 @@ where 1=1";
                         $model->year = '2019';
                     $sql = $sql . ' and year = ' . $model->year ;
             }
-                $sql=$sql. 'ORDER BY needs_norm.voltage desc,needs_norm.rem asc,needs_norm.nazv,needs_norm.year desc';
+                $sql=$sql. ' ORDER BY needs_norm.voltage desc,needs_norm.rem asc,needs_norm.nazv,needs_norm.year desc';
 //                        debug($sql);
 //        return;
 
@@ -377,7 +377,7 @@ where 1=1";
         }
     }
 
-    // Сброс аналитики в Excel
+    // Сброс в Excel
     public function actionNorms2excel()
     {
         $sql=Yii::$app->request->post('data');
@@ -434,6 +434,99 @@ where 1=1";
 
 
         $k1='Довідник норм';
+
+        $newQuery = clone $dataProvider->query;
+        $models = $newQuery->all();
+
+        \moonland\phpexcel\Excel::widget([
+            'models' => $models,
+
+            'mode' => 'export', //default value as 'export'
+            'format' => 'Excel2007',
+            'hap' => $k1,    //cтрока шапки таблицы
+            'data_model' => 1,
+            //'columns' => $h,
+            'columns' => $col_e,
+            'headers' => $cols
+        ]);
+        return;
+
+    }
+
+    // Сброс в Excel
+    public function actionFacts2excel()
+    {
+        $sql=Yii::$app->request->post('data');
+        $model = needs_fact::findBySql($sql)->asarray()->all();
+        $dataProvider = new ActiveDataProvider([
+            'query' => needs_fact::findBySql($sql),
+            'pagination' => [
+                'pageSize' => 500,
+            ],
+        ]);
+        $session = Yii::$app->session;
+        if($session->has('sql_analytics'))
+            $sql = $session->get('sql_analytics');
+        else
+            $sql='';
+
+        $cols = [
+            'id' => 'ID',
+            'nazv' => 'Назва',
+            'month_1' => 'січень',
+            'month_2' => 'лютий',
+            'month_3' => 'березень',
+            'month_4' => 'квітень',
+            'month_5' => 'травень',
+            'month_6' => 'червень',
+            'month_7' => 'липень',
+            'month_8' => 'серпень',
+            'month_9' => 'вересень',
+            'month_10' => 'жовтень',
+            'month_11' => 'листопад',
+            'month_12' => 'грудень',
+            'year' => 'Рік',
+            'rem' => '',
+            'voltage' => 'Рівень напруги',
+            'all_month' => 'Усього',
+            'delta_1' => '^1',
+            'delta_2' => '^2',
+            'delta_3' => '^3',
+            'delta_4' => '^4',
+            'delta_5' => '^5',
+            'delta_6' => '^6',
+            'delta_7' => '^7',
+            'delta_8' => '^8',
+            'delta_9' => '^9',
+            'delta_10' => '^10',
+            'delta_11' => '^11',
+            'delta_12' => '^12',
+            'all_delta' => '^',
+            'res' => 'РЕС',
+        ];
+
+        // Формирование массива названий колонок
+        $list='';  // Список полей для сброса в Excel
+        $h=[];
+        $i=0;
+//        debug($model);
+//        return;
+        $j=0;
+        $col_e=[];
+        foreach($model[0] as $k=>$v){
+            $col="'".$k."'";
+            $col_e[$j]=$k;
+            $j++;
+            if(in_array(trim($k), array_keys($cols), true)){
+                $h[$i]['col']=$col;
+                $i++;
+            }
+        }
+
+        $k1='Фактичні показання';
+//        debug($col_e);
+//        debug($cols);
+//        return;
 
         $newQuery = clone $dataProvider->query;
         $models = $newQuery->all();

@@ -79,4 +79,6 @@ select * from (
     '' as res
     from needs_fact a
     join needs_norm b on a.nazv=b.nazv and a.rem=b.rem  and 1=1 and a.year=2020 and b.year=2020 
-    ) s order by voltage desc,rem asc
+    ) s where (delta_1>0 or delta_2>0 or delta_3>0  or delta_4>0  or delta_5>0
+                     or delta_6>0  or delta_7>0  or delta_8>0  or delta_9>0  or delta_10>0
+                      or delta_11>0  or delta_12>0) or id=500  order by voltage desc,rem asc
