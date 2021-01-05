@@ -370,13 +370,88 @@ where 1=1";
 //            return;
                     $dataProvider->pagination = false;
                     return $this->render('norms', [
-                        'model' => $searchModel, 'dataProvider' => $dataProvider, 'searchModel' => $searchModel,
+                        'model' => $searchModel, 'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'sql' => $sql
                     ]);
         } else {
             return $this->render('norms_forms', compact('model'));
         }
     }
 
+    // Сброс аналитики в Excel
+    public function actionNorms2excel()
+    {
+        $sql=Yii::$app->request->post('data');
+        $model = Norms_search::findBySql($sql)->asarray()->all();
+        $dataProvider = new ActiveDataProvider([
+            'query' => Norms_search::findBySql($sql),
+            'pagination' => [
+                'pageSize' => 500,
+            ],
+        ]);
+        $session = Yii::$app->session;
+        if($session->has('sql_analytics'))
+            $sql = $session->get('sql_analytics');
+        else
+            $sql='';
+
+
+        $cols = [
+            'nazv'=> 'Назва',
+            'rem'=> 'РЕМ',
+            'voltage'=> 'Рівень напруги',
+            'mon_1'=> 'Січень',
+            'mon_2'=> 'Лютий',
+            'mon_3'=> 'Березень',
+            'mon_4'=> 'Квітень',
+            'mon_5'=> 'Травень',
+            'mon_6'=> 'Червень',
+            'mon_7'=> 'Липень',
+            'mon_8'=> 'Серпень',
+            'mon_9'=> 'Вересень',
+            'mon_10'=> 'Жовтень',
+            'mon_11'=> 'Листопад',
+            'mon_12'=> 'Грудень',
+            'year' => 'Рік'
+        ];
+
+        // Формирование массива названий колонок
+        $list='';  // Список полей для сброса в Excel
+        $h=[];
+        $i=0;
+//        debug($model);
+//        return;
+        $j=0;
+        $col_e=[];
+        foreach($model[0] as $k=>$v){
+            $col="'".$k."'";
+            $col_e[$j]=$k;
+            $j++;
+            if(in_array(trim($k), array_keys($cols), true)){
+                $h[$i]['col']=$col;
+                $i++;
+            }
+        }
+
+
+        $k1='Довідник норм';
+
+        $newQuery = clone $dataProvider->query;
+        $models = $newQuery->all();
+
+        \moonland\phpexcel\Excel::widget([
+            'models' => $models,
+
+            'mode' => 'export', //default value as 'export'
+            'format' => 'Excel2007',
+            'hap' => $k1,    //cтрока шапки таблицы
+            'data_model' => 1,
+            //'columns' => $h,
+            'columns' => $col_e,
+            'headers' => $cols
+        ]);
+        return;
+
+    }
 
 // Добавление новых пользователей
     public function actionAddAdmin() {
