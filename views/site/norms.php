@@ -34,6 +34,7 @@ $this->params['breadcrumbs'][] = 'Довідник норм';
             ['class' => 'yii\grid\SerialColumn'],
             'nazv',
             'rem',
+            'year',
             'voltage',
             'mon_1',
             'mon_2',
@@ -47,7 +48,7 @@ $this->params['breadcrumbs'][] = 'Довідник норм';
             'mon_10',
             'mon_11',
             'mon_12',
-            'year',
+            'sum_potr',
         ],
     ]); ?>
 

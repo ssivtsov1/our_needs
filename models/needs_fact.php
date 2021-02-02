@@ -26,6 +26,8 @@ class needs_fact extends \yii\db\ActiveRecord
     public $res;
     public $all_month;
     public $all_delta;
+    public $pointer;
+    public $rid;
 
     public static function tableName()
     {
@@ -65,6 +67,8 @@ class needs_fact extends \yii\db\ActiveRecord
             'delta_11' => '^11',
             'delta_12' => '^12',
             'all_delta' => '^',
+            'year' => 'Рік',
+            'pointer' => '*',
         ];
     }
 
@@ -72,8 +76,8 @@ class needs_fact extends \yii\db\ActiveRecord
     {
         return [
 
-            [['id','month_1','month_2','month_3','month_4','month_5','month_6','month_7','month_8',
-                'month_9','month_10','month_11','month_12','voltage','nazv','delta_1','delta_2','res'
+            [['id','month_1','month_2','month_3','month_4','month_5','month_6','month_7','month_8','pointer',
+                'month_9','month_10','month_11','month_12','voltage','nazv','delta_1','delta_2','res','year','rid'
               ],'safe']
             ];
     }

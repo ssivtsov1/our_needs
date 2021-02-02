@@ -91,8 +91,11 @@ class SiteController extends Controller
         if (!\Yii::$app->user->isGuest) {
             return $this->redirect(['site/more']);
         }
-        if(strpos(Yii::$app->request->url,'/cek')==0)
+        if(strpos(Yii::$app->request->url,'/cek')==0) {
+//            debug('111111111111111111');
+//            return;
             return $this->redirect(['site/more']);
+        }
         $model = new loginform();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->redirect(['site/more']);
@@ -104,15 +107,16 @@ class SiteController extends Controller
     }
 
     //  Происходит после ввода пароля
-    public function actionMore($sql='0')
+    public function actionMore($sql='0',$id_p=0)
     {
+
         $this->curpage=1;
         if($sql=='0') {
 
             $model = new InputData();
 
 
-            $const_year=date('Y');  //  константа - нужно поменять если будут добавляться года в список
+            $const_year=date('Y')+2;  //  константа - нужно поменять если будут добавляться года в список
             if ($model->load(Yii::$app->request->post())) {
                 // Создание поискового sql выражения
                 $where = '';
@@ -122,10 +126,30 @@ class SiteController extends Controller
                       or delta_11>0  or delta_12>0)'   ;
                 }
                 if (!empty($model->year)) {
-                    $year=$const_year-$model->year;
+                    if($model->year<>1)
+                        $year=$const_year-$model->year;
+                    else
+                        $year=0;
                 }
                 else
-                    $year=$const_year-1;
+                    $year=$const_year-2;
+
+                if(!isset(Yii::$app->user->identity->role))
+                {      $flag=0;
+                        $role=0;
+                }
+                else{
+                    $role=Yii::$app->user->identity->role;
+                }
+
+//                debug($role);
+//                return;
+
+                switch($role) {
+                    case 2:
+                        $where .= " and rem='-'";
+                        break;
+                }
 
                 if (!empty($model->rem)) {
                     switch ($model->rem){
@@ -142,22 +166,10 @@ class SiteController extends Controller
                             $where .= ' and rem=' . "'" . '04' ."'" ;
                             break;
                         case 5:
-                            $where .= ' and rem=' . "'" . '07' ."'" ;
-                            break;
-                        case 6:
                             $where .= ' and rem=' . "'" . '02' ."'" ;
                             break;
-                        case 7:
+                        case 6:
                             $where .= ' and rem=' . "'" . '05' ."'" ;
-                            break;
-                        case 8:
-                            $where .= ' and rem=' . "'" . '06' ."'" ;
-                            break;
-                        case 9:
-                            $where .= ' and rem=' . "'" . '08' ."'" ;
-                            break;
-                        case 10:
-                            $where .= ' and rem=' . "'" . '09' ."'" ;
                             break;
                     }
 
@@ -168,7 +180,8 @@ class SiteController extends Controller
                     $where = ' where ' . substr($where, 4) . ' or id=500 ' ;
                 }
 
-                $sql = "select id,nazv,res,all_month,all_delta,month_1,delta_1,month_2,delta_2,month_3,delta_3,month_4,delta_4,month_5,delta_5,month_6,delta_6,month_7,delta_7,month_8,delta_8,
+                $sql = "select ROW_NUMBER() OVER(order by voltage desc,rem asc,nazv asc,year desc) AS rid,
+                            id,nazv,res,all_month,all_delta,month_1,delta_1,month_2,delta_2,month_3,delta_3,month_4,delta_4,month_5,delta_5,month_6,delta_6,month_7,delta_7,month_8,delta_8,
             month_9,delta_9,month_10,delta_10,month_11,delta_11,month_12,delta_12,voltage,year from (
     select a.*,
     (a.month_1+a.month_2+a.month_3+a.month_4+
@@ -200,8 +213,10 @@ class SiteController extends Controller
     (a. month_12-b.mon_12) as all_delta,
                             c.rem as res
                             from needs_fact a
-                            join needs_norm b on a.nazv=b.nazv and a.rem=b.rem 
-                            and a.year=$year and b.year=$year 
+                            join needs_norm b on trim(a.nazv)=trim(b.nazv) 
+                            and a.rem=b.rem
+                            and a.year=b.year
+                            and case when $year=0 then 1=1 else a.year=$year end 
                             left join kod_rem c on a.rem=c.kod_rem
                            union all
     select 500 as id,'Усього:' as nazv,
@@ -249,10 +264,13 @@ class SiteController extends Controller
         (a. month_12-b.mon_12)) as all_delta,
     '' as res
     from needs_fact a
-    join needs_norm b on a.nazv=b.nazv and a.rem=b.rem ".apply_rem($model->rem).
-                    " and a.year=$year and b.year=$year 
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+    "
+                    .apply_rem($model->rem).
+                    " and case when $year=0 then 1=1 else a.year=$year end 
     ) s"
-    . $where . ' order by voltage desc,rem asc';
+    . $where . ' order by voltage desc,rem asc,nazv asc,year desc';
 
 //          debug($sql);
 //          return;
@@ -261,15 +279,20 @@ class SiteController extends Controller
                 fputs($f,$sql);
 
                 $data = needs_fact::findBySql($sql)->all();
+                $year=$data[0]['year'];
                 $kol = count($data);
+
                 $searchModel = new needs_fact();
                 $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
+//                debug($dataProvider);
+//                return;
 
                 $dataProvider->pagination = false;
 
                 return $this->render('needs_fact', [
                     'dataProvider' => $dataProvider,
-                    'searchModel' => $searchModel, 'kol' => $kol,'sql' => $sql]);
+                    'searchModel' => $searchModel,
+                    'kol' => $kol,'sql' => $sql,'year'=> $year,'id' => $id_p]);
             } else {
 
                 return $this->render('inputdata', [
@@ -282,17 +305,33 @@ class SiteController extends Controller
         else{
              // Если передается параметр $sql
             $data = needs_fact::findBySql($sql)->all();
+
+            $year=$data[0]['year'];
+
             $searchModel = new needs_fact();
             $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
             $dataProvider->pagination = false;
             $kol = count($data);
+            $n_key=0;
+            for($i=0;$i<$kol;$i++){
+                if($data[$i]['id']==$id_p) {
+                    $n_key=$i;
+                    break;
+                }
+            }
+            if($id_p<>0)
+                $dataProvider->id=$id_p;
+
+//            debug($sql);
+//            return;
 
             $session = Yii::$app->session;
             $session->open();
             $session->set('view', 1);
 
             return $this->render('needs_fact', ['data' => $data,
-                'dataProvider' => $dataProvider, 'searchModel' => $searchModel, 'kol' => $kol, 'sql' => $sql]);
+                'dataProvider' => $dataProvider, 'searchModel' => $searchModel,
+                'kol' => $kol, 'sql' => $sql,'year'=> $year,'id' => $n_key+1]);
         }
     }
 
@@ -301,10 +340,11 @@ class SiteController extends Controller
     {
         // $id  id записи
         // $mod - название модели
-        if($mod=='norm_facts')
-            $model = vneeds_fact::find()
-                ->where('id=:id', [':id' => $id])->one();
-
+//        if($mod=='norm_facts')
+//            $model = vneeds_fact::find()
+//                ->where('id=:id', [':id' => $id])->one();
+            $sql1='select * from ('.$sql.') src '. ' where id='.$id;
+            $model = needs_fact::findBySql($sql1)->one();
 
         $session = Yii::$app->session;
         $session->open();
@@ -329,12 +369,18 @@ class SiteController extends Controller
                 ',month_10='.$model->month_10.
                 ',month_11='.$model->month_11.
                 ',month_12='.$model->month_12.
+                ',year='.$model->year.
                 " WHERE id = ".$model->id;
+
+            $model->pointer='*';
 
             Yii::$app->db->createCommand($z)->execute();
 
+//            debug($model->id);
+//            return;
+
             if($mod=='norm_facts')
-                $this->redirect(['site/more','sql' => $sql]);
+                $this->redirect(['site/more','sql' => $sql,'id_p' =>$model->id]);
 
         } else {
             if($mod=='norm_facts')
@@ -351,14 +397,18 @@ class SiteController extends Controller
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
 //        debug('1111111111111');
-            $sql = "SELECT  nazv,c.rem,voltage,mon_1,mon_2,mon_3,mon_4,mon_5,mon_6,mon_7,mon_8,mon_9,mon_10,mon_11,mon_12,year 
+            $sql = "SELECT  nazv,c.rem,voltage,
+mon_1,mon_2,mon_3,mon_4,mon_5,mon_6,mon_7,mon_8,mon_9,mon_10,mon_11,mon_12,year,
+(mon_1+mon_2+mon_3+mon_4+mon_5+mon_6+mon_7+mon_8+mon_9+mon_10+mon_11+mon_12) as sum_potr 
 FROM needs_norm 
 left join kod_rem c on needs_norm.rem=c.kod_rem
  where 1=1 ";
                 if (!empty($model->year)) {
                     if ($model->year == '1')
-                        $model->year = '2020';
+                        $model->year = '2021';
                     if ($model->year == '2')
+                        $model->year = '2020';
+                    if ($model->year == '3')
                         $model->year = '2019';
                     $sql = $sql . ' and year = ' . $model->year ;
             }
@@ -475,6 +525,7 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
             'id' => 'ID',
             'nazv' => 'Назва',
             'res' => 'РЕС',
+            'year' => 'Рік',
 //            'rem' => '',
             'all_month' => 'Усього',
             'all_delta' => '^',
@@ -503,8 +554,6 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
             'month_12' => 'грудень',
             'delta_12' => '^12',
             'voltage' => 'Рівень напруги',
-            'year' => 'Рік',
-
         ];
 
         // Формирование массива названий колонок
@@ -550,12 +599,15 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
 
 // Добавление новых пользователей
     public function actionAddAdmin() {
-        $model = User::find()->where(['username' => 'buh1'])->one();
+        $model = User::find()->where(['username' => 'top'])->one();
         if (empty($model)) {
             $user = new User();
-            $user->username = 'buh1';
-            $user->email = 'buh1@ukr.net';
-            $user->setPassword('afynfpbz');
+            $user->username = 'top';
+            $user->email = 'top@ukr.net';
+            $user->id = 2;
+            $user->role = 3;
+            $user->id_res = 5000;
+            $user->setPassword('control');
             $user->generateAuthKey();
             if ($user->save()) {
                 echo 'good';
@@ -567,7 +619,8 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
     public function actionLogout()
     {
         Yii::$app->user->logout();
-        return $this->goHome();
+//        return $this->goHome();
+        return $this->redirect(str_replace('/web','',Url::toRoute('site/cek')));
     }
 
 //Щеденники

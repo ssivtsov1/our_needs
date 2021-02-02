@@ -9,6 +9,8 @@ use yii\data\ActiveDataProvider;
 
 class Norms_search extends \yii\db\ActiveRecord
 {
+    public $sum_potr;
+
     public static function tableName()
     {
         return 'needs_norm';
@@ -32,7 +34,8 @@ class Norms_search extends \yii\db\ActiveRecord
             'mon_10'=> 'Жовтень',
             'mon_11'=> 'Листопад',
             'mon_12'=> 'Грудень',
-            'year' => 'Рік'
+            'year' => 'Рік',
+            'sum_potr' => 'Всього:'
         ];
     }
 

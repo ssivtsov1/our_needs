@@ -312,6 +312,7 @@ class User extends Component
         if ($identity !== null && $this->beforeLogout($identity)) {
             $this->switchIdentity(null);
             $id = $identity->getId();
+//            if(count($id)==0) $id='2';
             $ip = Yii::$app->getRequest()->getUserIP();
             Yii::info("User '$id' logged out from $ip.", __METHOD__);
             if ($destroySession && $this->enableSession) {

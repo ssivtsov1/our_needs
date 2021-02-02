@@ -1,15 +1,16 @@
 <?php
-// Ввод основных данных для поиска телефонов
+// Ввод основных данных для поиска собственных нужд
 
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 $this->title = 'Власні потреби';
-$arr = ['- Виберіть рік *-', '2020', '2019'];
-$arr1 = ['- Виберіть РЕМ *-', 'СПС','Дніпропетровські РЕМ', 'Вільногірські РЕМ', 'Павлоградські РЕМ', 'Гвардійська дільниця',
-    'Жовтоводські РЕМ', 'Криворізькі РЕМ','Апостолівська дільниця', 'Інгулецька дільниця','Запорізькі РЕМ'];
+$arr = ['- Виберіть рік *-','Всі роки','2021','2020', '2019'];
+$arr1 = ['- Виберіть РЕМ *-', 'СПС','Дніпропетровські РЕМ', 'Вільногірські РЕМ', 'Павлоградські РЕМ',
+    'Жовтоводські РЕМ', 'Криворізькі РЕМ',];
 $arr2 = ['- Виберіть рівень напруги кВ *-', '6', '35', '150', '35 і 150'];
+$role = Yii::$app->user->identity->role;
 
 ?>
 
@@ -23,7 +24,6 @@ $arr2 = ['- Виберіть рівень напруги кВ *-', '6', '35', '1
     }
     
 </script>
-
 
 
 <div class="site-login" <?php if(isset(Yii::$app->user->identity->role) && Yii::$app->user->identity->role==3) echo 'id="main_block"'; ?>>
@@ -41,7 +41,9 @@ $arr2 = ['- Виберіть рівень напруги кВ *-', '6', '35', '1
                 ]]); ?>
             <?= $form->field($model, 'year')-> textInput() -> dropDownList ( $arr )?>
 <!--            --><?//= $form->field($model, 'voltage')-> textInput() -> dropDownList ( $arr2 )?>
-            <?= $form->field($model, 'rem')-> textInput() -> dropDownList ( $arr1 )?>
+            <? if($role==3): ?>
+                  <?= $form->field($model, 'rem')-> textInput() -> dropDownList ( $arr1 )?>
+            <? endif; ?>
             <?= $form->field($model, 'up')->checkbox(['checked'=>false]) ?>
 
             <?= Html::submitButton('OK',['class' => 'btn btn-success']) ?>

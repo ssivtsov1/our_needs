@@ -913,5 +913,51 @@ td img {
     width:200px;
     margin:1% 0 0 0;
 
-
 }
+
+.field-needs_fact-month_1{
+    float:left;
+}
+
+.field-needs_fact-month_2,
+.field-needs_fact-month_3,
+.field-needs_fact-month_4,
+.field-needs_fact-month_5,
+.field-needs_fact-month_6,
+.field-needs_fact-month_7,
+.field-needs_fact-month_8,
+.field-needs_fact-month_9,
+.field-needs_fact-month_10,
+.field-needs_fact-month_11,
+.field-needs_fact-month_12{
+    float:left;
+    margin-top: -5%;
+}
+
+.delta_n {
+    /*float:right;*/
+    margin-top: 3%;
+    margin-left: 3%;
+}
+
+.delta_n1 {
+    /*float:right;*/
+    margin-top: 8%;
+    margin-left: 3%;
+}
+
+.badge-danger {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    background-color: red;
+    border-radius: 10px;
+}
+

@@ -6,6 +6,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use yii\web\Request;
+use yii\helpers\Url;
 
 /* @var $this \yii\web\View */
 /* @var $content string */
@@ -30,6 +31,15 @@ AppAsset::register($this);
         $flag = 1;
         $main = 0;
 
+        $role=0;
+        $department = '';
+        if(!isset(Yii::$app->user->identity->role))
+        {      $flag=0;}
+        else {
+            $role = Yii::$app->user->identity->role;
+            $department = Yii::$app->user->identity->department;
+        }
+
         NavBar::begin([
                 'brandLabel' => 'Власні потреби',
                 'brandUrl' => Yii::$app->homeUrl,
@@ -39,31 +49,86 @@ AppAsset::register($this);
                     
                 ],
             ]);
-
-                     echo Nav::widget([
+        if($flag){
+        switch($role) {
+            case 3:  // top
+                echo Nav::widget([
                     'options' => ['class' => 'navbar-nav navbar-right'],
                     'items' => [
-                        ['label' => Html::tag('span',' Головна',['class' => 'glyphicon glyphicon-home']) ,
+                        ['label' => Html::tag('span', ' Головна', ['class' => 'glyphicon glyphicon-home']),
                             'url' => ['/site/index']],
                         ['label' => 'Довідники', 'url' => ['/site/index'],
                             'options' => ['id' => 'down_menu'],
                             'items' => [
                                 ['label' => 'Норми споживання', 'url' => ['/site/norms_forms']],
-                                ['label' => 'Підстанції', 'url' => ['/site/tp']],
+//                                ['label' => 'Підстанції', 'url' => ['/site/tp']],
                             ]],
-                        ['label' => 'Звіти', 'url' => ['/site/index'],
-                            'options' => ['id' => 'down_menu'],
-                            'items' => [
-                                ['label' => 'Споживання', 'url' => ['/site/spending']],
-                                ['label' => 'Порівняння норм', 'url' => ['/site/compare']],
-                            ]],
+//                        ['label' => 'Звіти', 'url' => ['/site/index'],
+//                            'options' => ['id' => 'down_menu'],
+//                            'items' => [
+//                                ['label' => 'Споживання', 'url' => ['/site/spending']],
+//                                ['label' => 'Порівняння норм', 'url' => ['/site/compare']],
+//                            ]],
                         ['label' => 'Про програму', 'url' => ['/site/about']],
+                        ['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
 
                     ],
                     'encodeLabels' => false,
                 ]);
+                break;
+            default:  // top
+                echo Nav::widget([
+                    'options' => ['class' => 'navbar-nav navbar-right'],
+                    'items' => [
+                        ['label' => Html::tag('span', ' Головна', ['class' => 'glyphicon glyphicon-home']),
+                            'url' => ['/site/index']],
+                        ['label' => 'Довідники', 'url' => ['/site/index'],
+                            'options' => ['id' => 'down_menu'],
+                            'items' => [
+                                ['label' => 'Норми споживання', 'url' => ['/site/norms_forms']],
+//                                ['label' => 'Підстанції', 'url' => ['/site/tp']],
+                            ]],
+//                        ['label' => 'Звіти', 'url' => ['/site/index'],
+//                            'options' => ['id' => 'down_menu'],
+//                            'items' => [
+//                                ['label' => 'Споживання', 'url' => ['/site/spending']],
+//                                ['label' => 'Порівняння норм', 'url' => ['/site/compare']],
+//                            ]],
+                        ['label' => 'Про програму', 'url' => ['/site/about']],
+                        ['label' => 'Вийти', 'url' => ['/site/logout'], 'linkOptions' => ['data-method' => 'post']],
 
-            NavBar::end();
+                    ],
+                    'encodeLabels' => false,
+                ]);
+                break;
+        }}
+           else  {  // other
+                echo Nav::widget([
+                    'options' => ['class' => 'navbar-nav navbar-right'],
+                    'items' => [
+//                        ['label' => Html::tag('span', ' Головна', ['class' => 'glyphicon glyphicon-home']),
+//                            'url' => ['/site/index']],
+                        ['label' => 'Довідники', 'url' => ['/site/index'],
+                            'options' => ['id' => 'down_menu'],
+                            'items' => [
+                                ['label' => 'Норми споживання', 'url' => ['/site/norms_forms']],
+//                                ['label' => 'Підстанції', 'url' => ['/site/tp']],
+                            ]],
+//                        ['label' => 'Звіти', 'url' => ['/site/index'],
+//                            'options' => ['id' => 'down_menu'],
+//                            'items' => [
+//                                ['label' => 'Споживання', 'url' => ['/site/spending']],
+//                                ['label' => 'Порівняння норм', 'url' => ['/site/compare']],
+//                            ]],
+                        ['label' => 'Про програму', 'url' => ['/site/about']],
+                        ['label' => 'Вхід', 'url' => str_replace('/web','',Url::toRoute('site/cek')), 'linkOptions' => ['data-method' => 'post']],
+                    ],
+                    'encodeLabels' => false,
+                ]);
+
+        }
+
+        NavBar::end();
         ?>
 
 
@@ -99,6 +164,7 @@ AppAsset::register($this);
         <? endif; }?>
 
 
+
         <div class="container">
 
             <div class="page-header">
@@ -117,7 +183,13 @@ AppAsset::register($this);
             <?= Breadcrumbs::widget([
                 'homeLink' => ['label' => 'Головна', 'url' => '/info'],
                 'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
-            ]) ?>
+            ]) ;
+//           echo  str_replace('/web','',Url::toRoute('site/cek'));
+            ?>
+
+            <div class="page-header">
+                <small class="text-info">Ви зайшли як: <mark><?php echo $department; ?></mark> </small></h1>
+            </div>
              
             <?= $content ?>
             <br>
