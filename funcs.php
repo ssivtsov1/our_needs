@@ -456,4 +456,35 @@ function apply_rem($res) {
     return $where;
 
 }
+
+
+function apply_rem1($res) {
+    $where='';
+    switch ($res){
+        case 1:
+            $where = ' and a.rem=' . "'" . '-' ."'" ;
+            break;
+        case 4:
+            $where = ' and a.rem=' . "'" . '01' ."'" ;
+            break;
+        case 6:
+            $where = ' and a.rem=' . "'" . '03' ."'" ;
+            break;
+        case 7:
+            $where= ' and a.rem=' . "'" . '04' ."'" ;
+            break;
+
+        case 5:
+            $where= ' and a.rem=' . "'" . '02' ."'" ;
+            break;
+        case 8:
+            $where= ' and a.rem=' . "'" . '05' ."'" ;
+            break;
+
+        default:
+            $where = ' and 1=1';
+    }
+    return $where;
+
+}
 ?>

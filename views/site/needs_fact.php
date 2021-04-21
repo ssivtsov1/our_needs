@@ -3,10 +3,11 @@
         var num="<? echo $id; ?>"
         var kol="<? echo $kol; ?>"
         var ScreenHeight = screen.height*0.8;
+        // alert(ScreenHeight);
         if(num>13)
-            var ki=num/15;
+            var ki=num/18;
         else
-            var ki=num/13;
+            var ki=num/20.63;
 
         var shift=ScreenHeight * ki;
 
@@ -102,8 +103,16 @@ use yii\grid\SerialColumn;
 //$this->params['breadcrumbs'][] = $this->title;
 ?>
 
-<?php echo Html::a('Експорт в Excel', ['site/facts2excel'
-],
+<?php
+$id_user = Yii::$app->user->id;
+$day=date('j');
+$month=date('n');
+$flag_e=0;
+if($day<11)  $flag_e=1;
+//if($day<12 && $month==3)  $flag_e=1;
+if(Yii::$app->user->identity->role==3) $flag_e=1;
+
+echo Html::a('Експорт в Excel', ['site/facts2excel'],
     ['class' => 'btn btn-info excel_btn',
         'data' => [
             'method' => 'post',
@@ -112,12 +121,25 @@ use yii\grid\SerialColumn;
                 'data' => $sql
 
             ],
-        ]]); ?>
+        ]]);
+echo('&nbsp' );
+echo('&nbsp' );
+echo('&nbsp' );
+echo Html::a('Зведений звіт', ['site/rep_permonth'],
+['class' => 'btn btn-info excel_btn',
+'data' => [
+'method' => 'post',
+'params' => [
+
+'data' => $sql
+
+],
+]]); ?>
 
 <!--<?//= Html::a('Добавити', ['createtransp'], ['class' => 'btn btn-success']) ?>-->
 <div class="site-spr">
     <h4><?= Html::encode($this->title) ?></h4>
-    <?php if(!isset(Yii::$app->user->identity->role)) { ?>
+    <?php if((isset(Yii::$app->user->identity->role) && $id_user==8) || $flag_e==0) { ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
 //        'filterModel' => $searchModel,
@@ -126,37 +148,51 @@ use yii\grid\SerialColumn;
         'columns' => [
             ['class' => 'yii\grid\SerialColumn',
             ],
-            [
-                /**
-                 * Указываем класс колонки
-                 */
-                'class' => \yii\grid\ActionColumn::class,
-            'buttons'=>[
-
-                'update'=>function ($url, $model) use ($sql) {
-                    $customurl=Yii::$app->getUrlManager()->
-                    createUrl(['/site/update_fact','id'=>$model['id'],'mod'=>'norm_facts','sql'=>$sql]);
-                    return \yii\helpers\Html::a( '<span class="glyphicon glyphicon-pencil"></span>', $customurl,
-                        ['title' => Yii::t('yii', 'Редагувати'), 'data-pjax' => '0']);
-                }
-            ],
-                'template' => '{update}',
-            ],
+//            [
+//                /**
+//                 * Указываем класс колонки
+//                 */
+//                'class' => \yii\grid\ActionColumn::class,
+//            'buttons'=>[
+//
+//                'update'=>function ($url, $model) use ($sql) {
+//                    $customurl=Yii::$app->getUrlManager()->
+//                    createUrl(['/site/update_fact','id'=>$model['id'],'mod'=>'norm_facts','sql'=>$sql]);
+//                    return \yii\helpers\Html::a( '<span class="glyphicon glyphicon-pencil"></span>', $customurl,
+//                        ['title' => Yii::t('yii', 'Редагувати'), 'data-pjax' => '0']);
+//                }
+//            ],
+//                'template' => '{update}',
+//            ],
 
             ['attribute' =>'nazv',
 
                 'value' => function ($model) {
 
-                    if ( $model->delta_1>0 || $model->delta_2>0 || $model->delta_3>0 || $model->delta_4>0
+                    if (( $model->delta_1>0 || $model->delta_2>0 || $model->delta_3>0 || $model->delta_4>0
                         || $model->delta_5>0 || $model->delta_6>0 || $model->delta_7>0 || $model->delta_8>0
                         || $model->delta_9>0 || $model->delta_10>0 || $model->delta_11>0 || $model->delta_12>0)
+                        && mb_substr($model->nazv,0,6,'UTF-8') != 'Усього')
+                        return "<span class='text-red'> $model->nazv </span>";
+                    elseif (( $model->delta_1>0 || $model->delta_2>0 || $model->delta_3>0 || $model->delta_4>0
+                            || $model->delta_5>0 || $model->delta_6>0 || $model->delta_7>0 || $model->delta_8>0
+                            || $model->delta_9>0 || $model->delta_10>0 || $model->delta_11>0 || $model->delta_12>0)
+                        && mb_substr($model->nazv,0,6,'UTF-8') == 'Усього')
                         return "<span class='text-red'> $model->nazv </span>";
                     else
-                        return $model->nazv;
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->nazv </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<em> $model->nazv </em>";
+                        else
+                            return $model->nazv;
                 },
                 'format' => 'raw'
 
             ],
+            'voltage',
             'res',
             'year',
             'all_month',
@@ -314,7 +350,7 @@ use yii\grid\SerialColumn;
 
             ],
 
-            'voltage',
+
 //             [
 //                /**
 //                 * Указываем класс колонки
@@ -343,7 +379,7 @@ use yii\grid\SerialColumn;
         ],
     ]); }?>
 
-    <?php if(isset(Yii::$app->user->identity->role)) { ?>
+    <?php if(isset(Yii::$app->user->identity->role) && $id_user<>8 && $flag_e==1) { ?>
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
 //        'filterModel' => $searchModel,
@@ -369,6 +405,7 @@ use yii\grid\SerialColumn;
                 ],
 
                 ['attribute' =>'nazv',
+
                     'value' => function ($model) {
 
                         if ( $model->delta_1>0 || $model->delta_2>0 || $model->delta_3>0 || $model->delta_4>0
@@ -376,15 +413,50 @@ use yii\grid\SerialColumn;
                             || $model->delta_9>0 || $model->delta_10>0 || $model->delta_11>0 || $model->delta_12>0)
                             return "<span class='text-red'> $model->nazv </span>";
                         else
+                            if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                                && mb_strlen($model->nazv,'UTF-8')==7)
+                                return "<strong> $model->nazv </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->nazv </em></strong>";
+                        else
                             return $model->nazv;
                     },
                     'format' => 'raw'
 
                 ],
+//                'voltage',
+                ['attribute' =>'voltage',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->voltage </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->voltage </em></strong>";
+                        else
+                            return $model->voltage;
+                    },
+                    'format' => 'raw'
 
+                ],
                 'res',
                 'year',
-                'all_month',
+//                'all_month',
+                ['attribute' =>'all_month',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->all_month </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->all_month </em></strong>";
+                        else
+                            return $model->all_month;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'all_delta',
                     'value' => function ($model) {
                         $q = $model->all_delta;
@@ -396,19 +468,47 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_1',
+//                'month_1',
+                ['attribute' =>'month_1',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_1 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_1 </em></strong>";
+                        else
+                            return $model->month_1;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_1',
                     'value' => function ($model) {
                         $q = $model->delta_1;
                         if ($q>0)
                             return "<span class='text-red'> $model->delta_1 </span>";
-                        else
+                        else {
                             return $model->delta_1;
+                        }
                     },
                     'format' => 'raw'
 
                 ],
-                'month_2',
+                ['attribute' =>'month_2',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_2 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_2 </em></strong>";
+                        else
+                            return $model->month_2;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_2',
                     'value' => function ($model) {
                         $q = $model->delta_2;
@@ -419,7 +519,20 @@ use yii\grid\SerialColumn;
                     },
                     'format' => 'raw'
                 ],
-                'month_3',
+                ['attribute' =>'month_3',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_3 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_3 </em></strong>";
+                        else
+                            return $model->month_3;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_3',
                     'value' => function ($model) {
                         $q = $model->delta_3;
@@ -431,7 +544,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_4',
+                ['attribute' =>'month_4',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_4 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_4 </em></strong>";
+                        else
+                            return $model->month_4;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_4',
                     'value' => function ($model) {
                         $q = $model->delta_4;
@@ -443,7 +569,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_5',
+                ['attribute' =>'month_5',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_5 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_5 </em></strong>";
+                        else
+                            return $model->month_5;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_5',
                     'value' => function ($model) {
                         $q = $model->delta_5;
@@ -455,7 +594,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_6',
+                ['attribute' =>'month_6',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_6 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_6 </em></strong>";
+                        else
+                            return $model->month_6;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_6',
                     'value' => function ($model) {
                         $q = $model->delta_6;
@@ -466,7 +618,20 @@ use yii\grid\SerialColumn;
                     },
                     'format' => 'raw'
                 ],
-                'month_7',
+                ['attribute' =>'month_7',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_7 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_7 </em></strong>";
+                        else
+                            return $model->month_7;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_7',
                     'value' => function ($model) {
                         $q = $model->delta_7;
@@ -478,7 +643,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_8',
+                ['attribute' =>'month_8',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_8 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_8 </em></strong>";
+                        else
+                            return $model->month_8;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_8',
                     'value' => function ($model) {
                         $q = $model->delta_8;
@@ -490,7 +668,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_9',
+                ['attribute' =>'month_9',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_9 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_9 </em></strong>";
+                        else
+                            return $model->month_9;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_9',
                     'value' => function ($model) {
                         $q = $model->delta_9;
@@ -502,7 +693,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_10',
+                ['attribute' =>'month_10',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_10 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_10 </em></strong>";
+                        else
+                            return $model->month_10;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_10',
                     'value' => function ($model) {
                         $q = $model->delta_10;
@@ -514,7 +718,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_11',
+                ['attribute' =>'month_11',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_11 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_11 </em></strong>";
+                        else
+                            return $model->month_11;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_11',
                     'value' => function ($model) {
                         $q = $model->delta_11;
@@ -526,7 +743,20 @@ use yii\grid\SerialColumn;
                     'format' => 'raw'
 
                 ],
-                'month_12',
+                ['attribute' =>'month_12',
+                    'value' => function ($model) {
+                        if (mb_substr($model->nazv,0,7,'UTF-8') == 'Усього:'
+                            && mb_strlen($model->nazv,'UTF-8')==7)
+                            return "<strong> $model->month_12 </strong>";
+                        if (mb_substr($model->nazv,0,6,'UTF-8') == 'Усього'
+                            && mb_strlen($model->nazv,'UTF-8')>7)
+                            return "<strong><em> $model->month_12 </em></strong>";
+                        else
+                            return $model->month_12;
+                    },
+                    'format' => 'raw'
+
+                ],
                 ['attribute' =>'delta_12',
                     'value' => function ($model) {
                         $q = $model->delta_12;
@@ -539,7 +769,7 @@ use yii\grid\SerialColumn;
 
                 ],
 
-                'voltage',
+
 //             [
 //                /**
 //                 * Указываем класс колонки

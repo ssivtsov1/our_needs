@@ -52,7 +52,7 @@ class needs_fact extends \yii\db\ActiveRecord
             'month_11' => 'листопад',
             'month_12' => 'грудень',
             'all_month' => 'Усього',
-            'voltage' => 'Рівень напруги',
+            'voltage' => 'U, кВ',
             'res' => 'РЕМ',
             'delta_1' => '^1',
             'delta_2' => '^2',
