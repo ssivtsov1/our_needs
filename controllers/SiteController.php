@@ -9,6 +9,7 @@ use app\models\Norms_search;
 use app\models\phones_sap;
 use app\models\phones_sap_search;
 use app\models\Plan;
+use app\models\DataReport;
 use app\models\plan_forma;
 use Yii;
 use yii\filters\AccessControl;
@@ -106,15 +107,35 @@ class SiteController extends Controller
         }
     }
 
+    //  Происходит при формировании отчета по потреблению
+    // при нажатии на кнопку "Зведений звіт"
+    public function actionRep_permonth()
+    {
+        $sql = Yii::$app->request->post('data');
+        $model = new DataReport();
+        if ($model->load(Yii::$app->request->post()))
+        {
+            $data = needs_fact::findBySql($sql)->all();
+//            debug($data);
+            return $this->render('report_permonth', [
+                'model' => $model, 'data' => $data
+            ]);
+        }
+        else {
+
+            return $this->render('data_report_permonth', [
+                'model' => $model
+            ]);
+        }
+    }
+
     //  Происходит после ввода пароля
     public function actionMore($sql='0',$id_p=0)
     {
-
         $this->curpage=1;
         if($sql=='0') {
 
             $model = new InputData();
-
 
             $const_year=date('Y')+2;  //  константа - нужно поменять если будут добавляться года в список
             if ($model->load(Yii::$app->request->post())) {
@@ -149,6 +170,21 @@ class SiteController extends Controller
                     case 2:
                         $where .= " and rem='-'";
                         break;
+                    case 4:
+                        $where .= " and rem='01'";
+                        break;
+                    case 5:
+                        $where .= " and rem='02'";
+                        break;
+                    case 6:
+                        $where .= " and rem='03'";
+                        break;
+                    case 7:
+                        $where .= " and rem='04'";
+                        break;
+                    case 8:
+                        $where .= " and rem='05'";
+                        break;
                 }
 
                 if (!empty($model->rem)) {
@@ -177,13 +213,14 @@ class SiteController extends Controller
                 $where = trim($where);
                 if (empty($where)) $where = '';
                 else {
-                    $where = ' where ' . substr($where, 4) . ' or id=500 ' ;
+                    $where = ' where ' . substr($where, 4) . ' or id>=480 ' ;
                 }
 
+                if($role<4)
                 $sql = "select ROW_NUMBER() OVER(order by voltage desc,rem asc,nazv asc,year desc) AS rid,
                             id,nazv,res,all_month,all_delta,month_1,delta_1,month_2,delta_2,month_3,delta_3,month_4,delta_4,month_5,delta_5,month_6,delta_6,month_7,delta_7,month_8,delta_8,
             month_9,delta_9,month_10,delta_10,month_11,delta_11,month_12,delta_12,voltage,year from (
-    select a.*,
+    select 0 as priority,a.*,
     (a.month_1+a.month_2+a.month_3+a.month_4+
     a.month_5+a.month_6+a.month_7+a.month_8+
     a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
@@ -219,7 +256,212 @@ class SiteController extends Controller
                             and case when $year=0 then 1=1 else a.year=$year end 
                             left join kod_rem c on a.rem=c.kod_rem
                            union all
-    select 500 as id,'Усього:' as nazv,
+                           
+      select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    6 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=6
+     union all                      
+     
+    select 2 as priority,490 as id,'Усього 10 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    10 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=10
+     union all   
+
+ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    35 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=35
+     union all   
+     
+     select 4 as priority,495 as id,'Усього 150 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    150 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=150
+     union all   
+                                                   
+    select 7 as priority,500 as id,'Усього:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
     sum(a.month_3) as month_3,
@@ -270,7 +512,304 @@ class SiteController extends Controller
                     .apply_rem($model->rem).
                     " and case when $year=0 then 1=1 else a.year=$year end 
     ) s"
-    . $where . ' order by voltage desc,rem asc,nazv asc,year desc';
+    . $where . ' order by priority asc,voltage desc,rem asc,nazv asc,year desc';
+else
+    $sql = "select ROW_NUMBER() OVER(order by voltage desc,rem asc,nazv asc,year desc) AS rid,
+                            id,nazv,res,all_month,all_delta,month_1,delta_1,month_2,delta_2,month_3,delta_3,month_4,delta_4,month_5,delta_5,month_6,delta_6,month_7,delta_7,month_8,delta_8,
+            month_9,delta_9,month_10,delta_10,month_11,delta_11,month_12,delta_12,voltage,year from (
+    select 0 as priority,a.*,
+    (a.month_1+a.month_2+a.month_3+a.month_4+
+    a.month_5+a.month_6+a.month_7+a.month_8+
+    a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    a. month_1-b.mon_1 as delta_1,
+    a. month_2-b.mon_2 as delta_2,
+    a. month_3-b.mon_3 as delta_3,
+    a. month_4-b.mon_4 as delta_4,
+    a. month_5-b.mon_5 as delta_5,
+    a. month_6-b.mon_6 as delta_6,
+    a. month_7-b.mon_7 as delta_7,
+    a. month_8-b.mon_8 as delta_8,
+    a. month_9-b.mon_9 as delta_9,
+    a. month_10-b.mon_10 as delta_10,
+    a. month_11-b.mon_11 as delta_11,
+    a. month_12-b.mon_12 as delta_12,
+    (a. month_1-b.mon_1)+
+    (a. month_2-b.mon_2)+
+    (a. month_3-b.mon_3)+
+    (a. month_4-b.mon_4)+
+    (a. month_5-b.mon_5)+
+    (a. month_6-b.mon_6)+
+    (a. month_7-b.mon_7)+
+    (a. month_8-b.mon_8)+
+    (a. month_9-b.mon_9)+
+    (a. month_10-b.mon_10)+
+    (a. month_11-b.mon_11)+
+    (a. month_12-b.mon_12) as all_delta,
+                            c.rem as res
+                            from needs_fact a
+                            join needs_norm b on trim(a.nazv)=trim(b.nazv) 
+                            and a.rem=b.rem
+                            and a.year=b.year
+                            and case when $year=0 then 1=1 else a.year=$year end 
+                            left join kod_rem c on a.rem=c.kod_rem
+                            union all
+
+select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    6 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=6" . apply_rem1($role) .
+     " union all                      
+                                 
+     select 2 as priority,490 as id,'Усього 10 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    10 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=10" . apply_rem1($role) .
+                            " union all
+                            
+select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    35 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=35" . apply_rem1($role) .
+     " union all 
+    
+      select 4 as priority,495 as id,'Усього 150 кВ:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    150 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+     where a.voltage=150" . apply_rem1($role) .
+    " union all   
+                                 
+    select 7 as priority,500 as id,'Усього:' as nazv,
+    sum(a.month_1) as month_1,
+    sum(a.month_2) as month_2,
+    sum(a.month_3) as month_3,
+    sum(a.month_4) as month_4,
+    sum(a.month_5) as month_5,
+    sum(a.month_6) as month_6,
+    sum(a.month_7) as month_7,
+    sum(a.month_8) as month_8,
+    sum(a.month_9) as month_9,
+    sum(a.month_10) as month_10,
+    sum(a.month_11) as month_11,
+    sum(a.month_12) as month_12,
+    0 as year,
+    '' as rem,
+    0 as voltage,
+    sum(a.month_1+a.month_2+a.month_3+a.month_4+
+        a.month_5+a.month_6+a.month_7+a.month_8+
+        a.month_9+a.month_10+a.month_11+a.month_12) as all_month,	
+    sum(a. month_1-b.mon_1) as delta_1,
+    sum(a. month_2-b.mon_2) as delta_2,
+    sum(a. month_3-b.mon_3) as delta_3,
+    sum(a. month_4-b.mon_4) as delta_4,
+    sum(a. month_5-b.mon_5) as delta_5,
+    sum(a. month_6-b.mon_6) as delta_6,
+    sum(a. month_7-b.mon_7) as delta_7,
+    sum(a. month_8-b.mon_8) as delta_8,
+    sum(a. month_9-b.mon_9) as delta_9,
+    sum(a. month_10-b.mon_10) as delta_10,
+    sum(a. month_11-b.mon_11) as delta_11,
+    sum(a. month_12-b.mon_12) as delta_12,
+    sum((a. month_1-b.mon_1)+
+        (a. month_2-b.mon_2)+
+        (a. month_3-b.mon_3)+
+        (a. month_4-b.mon_4)+
+        (a. month_5-b.mon_5)+
+        (a. month_6-b.mon_6)+
+        (a. month_7-b.mon_7)+
+        (a. month_8-b.mon_8)+
+        (a. month_9-b.mon_9)+
+        (a. month_10-b.mon_10)+
+        (a. month_11-b.mon_11)+
+        (a. month_12-b.mon_12)) as all_delta,
+    '' as res
+    from needs_fact a
+    join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
+    and a.rem=b.rem
+    "
+        .apply_rem1($role).
+        " and case when $year=0 then 1=1 else a.year=$year end 
+    ) s"
+        . $where . ' order by priority asc,voltage desc,rem asc,nazv asc,year desc';
 
 //          debug($sql);
 //          return;
@@ -284,7 +823,8 @@ class SiteController extends Controller
 
                 $searchModel = new needs_fact();
                 $dataProvider = $searchModel->search(Yii::$app->request->queryParams, $sql);
-//                debug($dataProvider);
+
+//                debug($sql);
 //                return;
 
                 $dataProvider->pagination = false;
@@ -524,6 +1064,7 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
         $cols = [
             'id' => 'ID',
             'nazv' => 'Назва',
+            'voltage' => 'Рівень напруги',
             'res' => 'РЕС',
             'year' => 'Рік',
 //            'rem' => '',
@@ -553,7 +1094,7 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
             'delta_11' => '^11',
             'month_12' => 'грудень',
             'delta_12' => '^12',
-            'voltage' => 'Рівень напруги',
+
         ];
 
         // Формирование массива названий колонок
@@ -581,6 +1122,7 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
 
         $newQuery = clone $dataProvider->query;
         $models = $newQuery->all();
+//        $head_attr = $models->attributeLabels();
 
         \moonland\phpexcel\Excel::widget([
             'models' => $models,
@@ -590,8 +1132,70 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
             'hap' => $k1,    //cтрока шапки таблицы
             'data_model' => 1,
             //'columns' => $h,
-            'columns' => $col_e,
-            'headers' => $cols
+//            'columns' => $col_e,
+            'columns' => [  'nazv',
+                'voltage',
+                'res',
+                'year',
+                'all_month',
+                'all_delta',
+                'month_1',
+                'delta_1',
+                'month_2',
+                'delta_2',
+                'month_3',
+                'delta_3',
+                'month_4',
+                'delta_4',
+                'month_5',
+                'delta_5',
+                'month_6',
+                'delta_6',
+                'month_7',
+                'delta_7',
+                'month_8',
+                'delta_8',
+                'month_9',
+                'delta_9',
+                'month_10',
+                'delta_10',
+                'month_11',
+                'delta_11',
+                'month_12',
+                'delta_12',
+
+            ],
+//            'headers' => $cols
+            'headers' => [  'nazv' => 'Назва',
+                'voltage' => 'Рівень напруги',
+                'res' => 'РЕМ','year' => 'Рік','all_month' => 'Усього',
+                'all_delta' => '^',
+                'month_1' => 'січень',
+                'delta_1' => '^1',
+                'month_2' => 'лютий',
+                'delta_2' => '^2',
+                'month_3' => 'березень',
+                'delta_3' => '^3',
+                'month_4' => 'квітень',
+                'delta_4' => '^4',
+                'month_5' => 'травень',
+                'delta_5' => '^5',
+                'month_6' => 'червень',
+                'delta_6' => '^6',
+                'month_7' => 'липень',
+                'delta_7' => '^7',
+                'month_8' => 'серпень',
+                'delta_8' => '^8',
+                'month_9' => 'вересень',
+                'delta_9' => '^9',
+                'month_10' => 'жовтень',
+                'delta_10' => '^10',
+                'month_11' => 'листопад',
+                'delta_11' => '^11',
+                'month_12' => 'грудень',
+                'delta_12' => '^12',
+
+                ],
         ]);
         return;
 
@@ -599,18 +1203,23 @@ left join kod_rem c on needs_norm.rem=c.kod_rem
 
 // Добавление новых пользователей
     public function actionAddAdmin() {
-        $model = User::find()->where(['username' => 'top'])->one();
-        if (empty($model)) {
+        $model = User::find()->where(['username' => 'sbit'])->one();
+
+        if (empty($model) || is_null($model)) {
             $user = new User();
-            $user->username = 'top';
-            $user->email = 'top@ukr.net';
-            $user->id = 2;
+            $user->username = 'sbit';
+            $user->email = 'sbit@ukr.net';
+            $user->id = 8;
             $user->role = 3;
             $user->id_res = 5000;
-            $user->setPassword('control');
+            $user->setPassword('sbit_cek');
             $user->generateAuthKey();
             if ($user->save()) {
                 echo 'good';
+            }
+            else{
+                $user->validate();
+                debug($user->getErrors());
             }
         }
     }
