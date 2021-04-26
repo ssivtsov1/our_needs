@@ -136,7 +136,7 @@ class SiteController extends Controller
                 ]);
             }
 
-            $sql1 = Yii::$app->request->post('data');
+            $sql1  =  Yii::$app->request->post('data');
 //            debug($sql1);
 //            return;
             return $this->render('data_report_permonth', [
