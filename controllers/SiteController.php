@@ -107,6 +107,24 @@ class SiteController extends Controller
             ]);
         }
     }
+    
+    //  Происходит при формировании отчета по потреблению
+    // при нажатии на кнопку "Зведений звіт"
+    public function actionRep_permonth()
+    {
+        $model = new DataReport();
+        if ($model->load(Yii::$app->request->post())) {
+            $sql = $model->sql;
+            $data1 = cneeds_fact::findBySql($sql)->asarray()->all();
+            return $this->render('report_permonth', [
+                'model' => $model, 'data1' => $data1
+            ]);
+        }
+            $sql1  =  Yii::$app->request->post('data');
+            return $this->render('data_report_permonth', [
+                'model' => $model,'sql' => $sql1
+            ]);
+    }
 
 
     public function actionReport_permonth($month,$sql='')
