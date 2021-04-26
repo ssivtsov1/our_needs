@@ -36,9 +36,9 @@ select ROW_NUMBER() OVER(order by voltage desc,rem asc,nazv asc,year desc) AS ri
                             and a.year=b.year
                             and case when 2021=0 then 1=1 else a.year=2021 end 
                             left join kod_rem c on a.rem=c.kod_rem
-                            union all
-
-select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
+                           union all
+                           
+      select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
     sum(a.month_3) as month_3,
@@ -86,9 +86,10 @@ select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
      and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
-     where a.voltage=6 and a.rem='01' union all                      
-                                 
-     select 2 as priority,490 as id,'Усього 10 кВ:' as nazv,
+     where a.voltage=6
+     union all                      
+     
+    select 2 as priority,490 as id,'Усього 10 кВ:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
     sum(a.month_3) as month_3,
@@ -136,9 +137,10 @@ select 1 as priority,480 as id,'Усього 6 кВ:' as nazv,
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
      and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
-     where a.voltage=10 and a.rem='01' union all
-                            
-select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
+     where a.voltage=10
+     union all   
+
+ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
     sum(a.month_3) as month_3,
@@ -186,9 +188,10 @@ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
      and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
-     where a.voltage=35 and a.rem='01' union all 
-    
-      select 4 as priority,495 as id,'Усього 150 кВ:' as nazv,
+     where a.voltage=35
+     union all   
+     
+     select 4 as priority,495 as id,'Усього 150 кВ:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
     sum(a.month_3) as month_3,
@@ -236,8 +239,9 @@ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
      and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
-     where a.voltage=150 and a.rem='01' union all   
-                                 
+     where a.voltage=150
+     union all   
+                                                   
     select 7 as priority,500 as id,'Усього:' as nazv,
     sum(a.month_1) as month_1,
     sum(a.month_2) as month_2,
@@ -285,5 +289,5 @@ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
     from needs_fact a
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
-     and a.rem='01' and case when 2021=0 then 1=1 else a.year=2021 end 
-    ) s where rem='01' or id>=480  order by priority asc,voltage desc,rem asc,nazv asc,year desc
+     and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
+    ) s order by priority asc,voltage desc,rem asc,nazv asc,year desc

@@ -8,9 +8,10 @@ use yii\base\Model;
 
 class DataReport extends Model
 {
-    public $id;
     public $year;        // Год
     public $month;     // Месяц
+    public $sql;
+
 
     public function attributeLabels()
     {
@@ -25,7 +26,7 @@ class DataReport extends Model
         return [
             ['year', 'safe'],
             ['month', 'safe'],
-
+            ['sql', 'safe'],
         ];
     }
 }
