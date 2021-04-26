@@ -115,7 +115,7 @@ class SiteController extends Controller
         $model = new DataReport();
         if ($model->load(Yii::$app->request->post()))
         {
-            $data = needs_fact::findBySql($sql)->all();
+            $data = needs_fact::findBySql($sql)->asArray()->all();
 //            debug($data);
             return $this->render('report_permonth', [
                 'model' => $model, 'data' => $data
