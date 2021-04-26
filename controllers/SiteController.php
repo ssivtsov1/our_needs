@@ -107,7 +107,7 @@ class SiteController extends Controller
             ]);
         }
     }
-    
+
     //  Происходит при формировании отчета по потреблению
     // при нажатии на кнопку "Зведений звіт"
     public function actionRep_permonth()
