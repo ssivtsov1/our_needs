@@ -113,6 +113,7 @@ class SiteController extends Controller
     public function actionRep_permonth()
     {
         $model = new DataReport();
+        
         if ($model->load(Yii::$app->request->post())) {
             $sql = $model->sql;
             $data1 = cneeds_fact::findBySql($sql)->asarray()->all();
