@@ -112,31 +112,18 @@ class SiteController extends Controller
     // при нажатии на кнопку "Зведений звіт"
     public function actionRep_permonth()
     {
-//        $data1 = cneeds_fact::findBySql($sql1)->asarray()->all();
         $model = new DataReport();
-
-//            return $this->redirect(['report_permonth','month'=>$model->month,'sql'=>$sql1]);
-//        debug($sql1);
-//        return;
         if ($model->load(Yii::$app->request->post())) {
-
-//            return $this->redirect(['report_permonth','month'=>$model->month,'sql'=>$sql1]);
-//            debug($model);
-//            return;
             $sql = $model->sql;
             $data1 = cneeds_fact::findBySql($sql)->asarray()->all();
             return $this->render('report_permonth', [
                 'model' => $model, 'data1' => $data1
             ]);
         }
-
             $sql1  =  Yii::$app->request->post('data');
-//            debug($sql1);
-//            return;
             return $this->render('data_report_permonth', [
                 'model' => $model,'sql' => $sql1
             ]);
-
     }
 
     public function actionReport_permonth($month,$sql='')
