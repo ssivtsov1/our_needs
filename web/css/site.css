@@ -960,4 +960,10 @@ td img {
     background-color: red;
     border-radius: 10px;
 }
+.itog {
+    font-weight: bold;
+}
+.usual {
+    font-weight: normal;
+}
 

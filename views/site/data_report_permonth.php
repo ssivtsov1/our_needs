@@ -16,12 +16,15 @@ $month =array(1 => 'Січень',
     11 => 'Листопад',
     12 => 'Грудень',
 );
-
+$model->sql=$sql;
+//debug($model);
 ?>
 <div class = 'test col-xs-3' >
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
     <?= $form->field($model, 'year')->label('Год')-> textInput() -> dropDownList ($arr)?>
+
+    <?= $form->field($model, 'sql')->label('')-> textInput() ?>
 
     <?= $form->field($model, 'month')->label('Месяц')  -> textInput() -> dropDownList ($month)?>
 
