@@ -29,6 +29,16 @@ $month =array(1 => 'Січень',
 //return
 ?>
 <div class="site-spr">
+
+<h5 align="center"><b> Зведений звіт про обсяги фактичного споживання </b></h5>
+<h5 align="center"><b> електричної енергії на власні потреби </b></h5>
+<h5 align="center"><b> ПС 35-150 кВ та РП 6-10 кВ </b></h5>
+<h5 align="center"><b> <?php echo 'за'. ' '. mb_strtolower($month[$m], 'UTF-8').' '.$data1[0]['year']. 'р.'.' '. 'в тисячах кВт*год'; ?> </b></h5>
+<p>
+<h6 align="left"><b> Фактичні показники </b></h6>
+</div>
+
+<div class="site-spr">
     <table width="600px" class="table table-bordered ">
 
         <th>
@@ -95,4 +105,16 @@ $month =array(1 => 'Січень',
         }
         ?>
         <table id="header-fixed"></table>
+</div>
+
+<div class="site-spr">
+    <b>
+    <p class="leftstr">Директор технічний</p>
+    <p class="rightstr">Ю.О. Паршин</p>
+    <div style="clear: left"></div>
+    </b>
+
+    <h6 align="justify"><b> Дані витягнув з програмного продукту розташованого за адресою 192.168.55.1/our_needs/cek Цемкало І.С.</b></h6>
+    <h6 align="justify"><b> тел. 229</b></h6>
+
 </div>
