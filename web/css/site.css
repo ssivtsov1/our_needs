@@ -966,4 +966,11 @@ td img {
 .usual {
     font-weight: normal;
 }
+.leftstr, .rightstr {
+    float: left; /* Обтекание справа */
+    width: 50%; /* Ширина текстового блока */
+}
+.rightstr {
+    text-align: right; /* Выравнивание по правому краю */
+}
 

@@ -127,6 +127,7 @@ class SiteController extends Controller
             ]);
     }
 
+
     public function actionReport_permonth($month,$sql='')
     {
         debug($month);
