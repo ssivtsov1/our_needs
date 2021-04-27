@@ -102,3 +102,19 @@
     width: 100%;
     text-align: center;;
 }
+
+.th_rep{
+    width: 150px;
+   
+}
+
+.itog {
+    font-weight: bold;
+     border: 1px solid #ddd;
+}
+.usual {
+    font-weight: normal;
+     border: 1px solid #ddd;
+    
+}
+

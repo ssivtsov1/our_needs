@@ -125,6 +125,7 @@ echo Html::a('Експорт в Excel', ['site/facts2excel'],
 echo('&nbsp' );
 echo('&nbsp' );
 echo('&nbsp' );
+if(!((isset(Yii::$app->user->identity->role) && $id_user==8) || $flag_e==0))
 echo Html::a('Зведений звіт', ['site/rep_permonth'],
 ['class' => 'btn btn-info excel_btn',
 'data' => [

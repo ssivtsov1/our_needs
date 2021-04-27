@@ -22,7 +22,7 @@ $model->sql=$sql;
 <div class = 'test col-xs-3' >
     <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]) ?>
 
-    <?= $form->field($model, 'year')->label('Год')-> textInput() -> dropDownList ($arr)?>
+<!--    --><?//= $form->field($model, 'year')->label('Год')-> textInput() -> dropDownList ($arr)?>
 
     <?= $form->field($model, 'sql')->label('')-> textInput() ?>
 

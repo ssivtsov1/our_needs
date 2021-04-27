@@ -8,10 +8,11 @@ $this->title = "Зведений звіт";
 <!--    <h3>--><?//= Html::encode($this->title) ?><!--</h3>-->
 <!--</div>-->
 
-<?php //debug ($data);
+<?php
+//debug ($data1);
 //return;
+
 $y = count ($data1);
-$m = $model->month;
 $month =array(1 => 'Січень',
     2 => 'Лютий',
     3 => 'Березень',
@@ -34,27 +35,28 @@ $month =array(1 => 'Січень',
 <h5 align="center"><b> електричної енергії на власні потреби </b></h5>
 <h5 align="center"><b> ПС 35-150 кВ та РП 6-10 кВ </b></h5>
 <h5 align="center"><b> <?php echo 'за'. ' '. mb_strtolower($month[$m], 'UTF-8').' '.$data1[0]['year']. 'р.'.' '. 'в тисячах кВт*год'; ?> </b></h5>
-<p>
+<!--<p>-->
 <h6 align="left"><b> Фактичні показники </b></h6>
 </div>
 
 <div class="site-spr">
-    <table width="600px" class="table table-bordered table-hover">
-
-        <th>
+    <table width="600px" class="table table-bordered">
+        <tr>
+        <th class="th-rep">
             Назва
         </th>
-        <th>
+        <th class="th-rep">
             РЕМ
         </th>
-        <th>
+        <th class="th-rep">
             <?php
             echo $month[$m];
             ?>
         </th>
-        <th>
+        <th class="th-rep">
             ^
         </th>
+        </tr>
 
         <?php
         $u=-1;
@@ -104,7 +106,7 @@ $month =array(1 => 'Січень',
             <?php
         }
         ?>
-         </table>
+        </table>
         <table id="header-fixed"></table>
 </div>
 
@@ -119,16 +121,5 @@ $month =array(1 => 'Січень',
     <h6 align="justify"><b> тел. 229</b></h6>
 
 </div>
+<code><?//= __FILE__ ?></code>
 
-
-<div class="site-spr">
-<?=Html::a('Роздрукувати', ['site/rep_permonth_print'], [
-'data' => [
-'method' => 'post',
-'params' => [
-'m' => $model->month,
-'sql' => $model->sql,
-],],
-'class' => 'btn btn-primary', 'target' => '_blank',]);
-?>
-</div>

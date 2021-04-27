@@ -973,4 +973,7 @@ td img {
 .rightstr {
     text-align: right; /* Выравнивание по правому краю */
 }
+.field-datareport-sql{
+    display: none;
+}
 

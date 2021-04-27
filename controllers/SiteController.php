@@ -127,6 +127,31 @@ class SiteController extends Controller
             ]);
     }
 
+    //  Происходит при формировании печати отчета по потреблению
+    public function actionRep_permonth_print()
+    {
+
+            $sql = Yii::$app->request->post('sql');
+            $m = Yii::$app->request->post('m');
+            $data1 = cneeds_fact::findBySql($sql)->asarray()->all();
+
+            $pdf = new Pdf([
+            'mode' => Pdf::MODE_UTF8 , // leaner size using standard fonts
+            'cssFile' => '@vendor/kartik-v/yii2-mpdf/assets/kv-mpdf-bootstrap.min.css',
+            'content' => $this->renderPartial('report_permonth_print',['m' => $m,'style_title' => 'd9','data1' => $data1]),
+            'options' => [
+                'title' => 'Друк звіту',
+                'subject' => ''
+            ],
+            'methods' => [
+//                'SetHeader' => ['Створено для печаті: ' . date("d.m.Y H:i:s")],
+                'SetFooter' => ['|Page {PAGENO}|'],
+            ]
+        ]);
+        return $pdf->render();
+    }
+
+
 
     public function actionReport_permonth($month,$sql='')
     {
