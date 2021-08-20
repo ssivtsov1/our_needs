@@ -111,11 +111,11 @@ $month =array(1 => 'Січень',
 </div>
 
 <div class="site-spr">
-    <b>
-    <p class="leftstr">Директор технічний</p>
-    <p class="rightstr">Ю.О. Паршин</p>
+
+    <p class="leftstr"> <b>Директор технічний</b></p>
+    <p class="rightstr"><b>Ю.О. Паршин</b></p>
     <div style="clear: left"></div>
-    </b>
+
 
     <h6 align="justify"><b> Дані витягнув з програмного продукту розташованого за адресою 192.168.55.1/our_needs/cek Цемкало І.С.</b></h6>
     <h6 align="justify"><b> тел. 229</b></h6>

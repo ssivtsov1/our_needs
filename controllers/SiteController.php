@@ -145,7 +145,7 @@ class SiteController extends Controller
             ],
             'methods' => [
 //                'SetHeader' => ['Створено для печаті: ' . date("d.m.Y H:i:s")],
-                'SetFooter' => ['|Page {PAGENO}|'],
+                'SetFooter' => [''],
             ]
         ]);
         return $pdf->render();
@@ -859,7 +859,7 @@ select 3 as priority,491 as id,'Усього 35 кВ:' as nazv,
                 $dataProvider->pagination = false;
 
                 return $this->render('needs_fact', [
-                    'dataProvider' => $dataProvider,
+                    'dataProvider' =>$dataProvider,
                     'searchModel' => $searchModel,
                     'kol' => $kol,'sql' => $sql,'year'=> $year,'id' => $id_p]);
             } else {

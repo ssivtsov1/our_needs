@@ -290,4 +290,4 @@ select ROW_NUMBER() OVER(order by voltage desc,rem asc,nazv asc,year desc) AS ri
     join needs_norm b on trim(a.nazv)=trim(b.nazv) and a.year=b.year 
     and a.rem=b.rem
      and 1=1 and case when 2021=0 then 1=1 else a.year=2021 end 
-    ) s where rem='-' or id>=480  order by priority asc,voltage desc,rem asc,nazv asc,year desc
+    ) s order by priority asc,voltage desc,rem asc,nazv asc,year desc
